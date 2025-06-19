@@ -25,7 +25,7 @@ body {
   font-size: clamp(1rem, 2.5vw, 1.5rem);
 }
 
-.mot {
+.phrase {
   padding: 0.5vw 1vw;
   cursor: pointer;
   font-size: clamp(1rem, 3vw, 1.6rem);
