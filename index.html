@@ -5,57 +5,67 @@
   <title>Révision Grammaire</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
       padding: 30px;
-      background: #f4f4f4;
+      background: #f0faff;
       text-align: center;
     }
 
     .phrase {
-      font-size: 1.4em;
+      font-size: 1.6em;
       margin: 20px auto;
-      max-width: 600px;
+      max-width: 700px;
     }
 
     .mot {
-      padding: 4px 6px;
+      padding: 6px 8px;
       cursor: pointer;
       color: black;
       text-decoration: none;
       border-bottom: none;
       transition: border-bottom 0.3s;
       display: inline-block;
+      border-radius: 6px;
     }
 
     .mot.selected {
-      outline: 2px dashed gray;
+      outline: 3px dashed gray;
+      background-color: #e0f0ff;
     }
 
     .bleu {
-      border-bottom: 2px solid blue !important;
+      border-bottom: 4px solid blue !important;
     }
 
     .rouge {
-      border-bottom: 2px solid red !important;
+      border-bottom: 4px solid red !important;
     }
 
     #feedback {
       margin-top: 15px;
       font-weight: bold;
+      font-size: 1.2em;
     }
 
     button {
-      padding: 10px 15px;
-      margin: 5px;
-      font-size: 1em;
+      padding: 12px 20px;
+      margin: 10px;
+      font-size: 1.1em;
+      border-radius: 10px;
+      background-color: #ffffff;
+      border: 2px solid #ccc;
       cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #e6f7ff;
     }
   </style>
 </head>
 <body>
 
   <h2>Quel est le rôle de chaque groupe ?</h2>
-
   <div class="phrase" id="phrase"></div>
 
   <div>
@@ -72,50 +82,48 @@
     let phrases = [];
     let current = 0;
     let selected = null;
+    let usedIndices = [];
 
-    // Charger le fichier JSON
     fetch('./data.json')
       .then(response => response.json())
       .then(data => {
         phrases = data;
-        renderPhrase();
+        nextPhrase();
       })
       .catch(err => {
         document.getElementById('phrase').textContent = "Erreur de chargement du fichier data.json";
         console.error(err);
       });
 
-function renderPhrase() {
-  const container = document.getElementById('phrase');
-  container.innerHTML = '';
-  document.getElementById('feedback').textContent = '';
-  selected = null;
-
-  const phrase = phrases[current];
-
-  // Afficher la phrase complète
-  const fullText = document.createElement('p');
-  fullText.style.fontStyle = 'italic';
-  fullText.textContent = phrase.phrase;
-  container.appendChild(fullText);
-
-  // Afficher les groupes à cliquer
-  phrase.groupes.forEach(g => {
-    const span = document.createElement('span');
-    span.className = 'mot';
-    span.textContent = g.texte;
-    span.dataset.role = g.role;
-    span.onclick = () => {
-      document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
-      selected = span;
-      span.classList.add('selected');
+    function renderPhrase() {
+      const container = document.getElementById('phrase');
+      container.innerHTML = '';
       document.getElementById('feedback').textContent = '';
-    };
-    container.appendChild(span);
-    container.appendChild(document.createTextNode(' '));
-  });
-}
+      selected = null;
 
+      const phrase = phrases[current];
+
+      const fullText = document.createElement('p');
+      fullText.style.fontStyle = 'italic';
+      fullText.textContent = phrase.phrase;
+      container.appendChild(fullText);
+
+      phrase.groupes.forEach(g => {
+        const span = document.createElement('span');
+        span.className = 'mot';
+        span.textContent = g.texte;
+        span.dataset.role = g.role;
+        span.onclick = () => {
+          if (span.classList.contains('bleu') || span.classList.contains('rouge')) return;
+          document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
+          selected = span;
+          span.classList.add('selected');
+          document.getElementById('feedback').textContent = '';
+        };
+        container.appendChild(span);
+        container.appendChild(document.createTextNode(' '));
+      });
+    }
 
     function checkAnswer(answer) {
       if (!selected) {
@@ -123,21 +131,28 @@ function renderPhrase() {
         return;
       }
       const role = selected.dataset.role;
-      const isSujet = role === 'sujet';
-
       selected.classList.remove('selected');
 
       if (role === answer) {
         document.getElementById('feedback').textContent = "✅ Bonne réponse !";
       } else {
-        document.getElementById('feedback').textContent = `❌ Mauvaise réponse. Ce n’est pas ${answer.toUpperCase()}.`;
+        document.getElementById('feedback').textContent = `❌ Mauvaise réponse. Ce groupe est un ${role.toUpperCase()}.`;
       }
 
-      selected.classList.add(isSujet ? 'bleu' : 'rouge');
+      selected.classList.add(role === 'sujet' ? 'bleu' : 'rouge');
+      selected.onclick = null;
     }
 
     function nextPhrase() {
-      current = (current + 1) % phrases.length;
+      if (usedIndices.length === phrases.length) usedIndices = [];
+
+      let index;
+      do {
+        index = Math.floor(Math.random() * phrases.length);
+      } while (usedIndices.includes(index));
+
+      usedIndices.push(index);
+      current = index;
       renderPhrase();
     }
   </script>
