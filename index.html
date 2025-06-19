@@ -5,7 +5,7 @@
   <title>Révision Grammaire</title>
   <style>
     body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
       padding: 30px;
       background: #f0faff;
       text-align: center;
@@ -47,6 +47,17 @@
       font-size: 1.2em;
     }
 
+    #scoreboard {
+      margin-top: 20px;
+      font-size: 1.1em;
+    }
+
+    .stars {
+      margin-top: 10px;
+      font-size: 1.5em;
+      color: gold;
+    }
+
     button {
       padding: 12px 20px;
       margin: 10px;
@@ -76,13 +87,25 @@
   </div>
 
   <p id="feedback"></p>
-  <button onclick="nextPhrase()">Phrase suivante</button>
+  <div id="scoreboard">
+    Points : <span id="points">0</span> | Erreurs : <span id="errors">0</span>
+    <div class="stars" id="stars">⭐</div>
+    <button onclick="resetScores()">🔄 Réinitialiser</button>
+  </div>
+
+  <button id="nextBtn" onclick="nextPhrase()" disabled>Phrase suivante</button>
+
+  <audio id="sound-good" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+  <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
 
   <script>
     let phrases = [];
     let current = 0;
     let selected = null;
     let usedIndices = [];
+    let réponsesCorrectes = new Set();
+    let totalPoints = 0;
+    let totalErreurs = 0;
 
     fetch('./data.json')
       .then(response => response.json())
@@ -99,6 +122,8 @@
       const container = document.getElementById('phrase');
       container.innerHTML = '';
       document.getElementById('feedback').textContent = '';
+      document.getElementById('nextBtn').disabled = true;
+      réponsesCorrectes = new Set();
       selected = null;
 
       const phrase = phrases[current];
@@ -108,11 +133,12 @@
       fullText.textContent = phrase.phrase;
       container.appendChild(fullText);
 
-      phrase.groupes.forEach(g => {
+      phrase.groupes.forEach((g, index) => {
         const span = document.createElement('span');
         span.className = 'mot';
         span.textContent = g.texte;
         span.dataset.role = g.role;
+        span.dataset.index = index;
         span.onclick = () => {
           if (span.classList.contains('bleu') || span.classList.contains('rouge')) return;
           document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
@@ -125,22 +151,42 @@
       });
     }
 
+    function updateScoreboard() {
+      document.getElementById('points').textContent = totalPoints;
+      document.getElementById('errors').textContent = totalErreurs;
+      const starCount = totalPoints >= 30 ? 3 : totalPoints >= 20 ? 2 : totalPoints >= 10 ? 1 : 0;
+      document.getElementById('stars').textContent = '⭐'.repeat(starCount);
+    }
+
     function checkAnswer(answer) {
       if (!selected) {
         alert("Clique sur un groupe de mots.");
         return;
       }
+
       const role = selected.dataset.role;
+      const idx = selected.dataset.index;
       selected.classList.remove('selected');
 
       if (role === answer) {
-        document.getElementById('feedback').textContent = "✅ Bonne réponse !";
+        selected.classList.add(role === 'sujet' ? 'bleu' : 'rouge');
+        réponsesCorrectes.add(idx);
+        totalPoints++;
+        document.getElementById('sound-good').play();
+        updateScoreboard();
       } else {
-        document.getElementById('feedback').textContent = `❌ Mauvaise réponse. Ce groupe est un ${role.toUpperCase()}.`;
+        totalErreurs++;
+        document.getElementById('sound-bad').play();
+        updateScoreboard();
+        document.getElementById('feedback').textContent = `❌ Mauvaise réponse.`;
+        return;
       }
 
-      selected.classList.add(role === 'sujet' ? 'bleu' : 'rouge');
-      selected.onclick = null;
+      const total = phrases[current].groupes.length;
+      if (réponsesCorrectes.size === total) {
+        document.getElementById('feedback').textContent = `✅ Bravo ! Tu as tout trouvé.`;
+        document.getElementById('nextBtn').disabled = false;
+      }
     }
 
     function nextPhrase() {
@@ -154,6 +200,12 @@
       usedIndices.push(index);
       current = index;
       renderPhrase();
+    }
+
+    function resetScores() {
+      totalPoints = 0;
+      totalErreurs = 0;
+      updateScoreboard();
     }
   </script>
 
