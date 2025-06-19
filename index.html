@@ -60,7 +60,7 @@ function renderPhrase() {
     const span = document.createElement('span');
     let affichage = g.role === 'cdv' ? 'GCDV' : g.role === 'civ' ? 'GCIV' : g.role;
     span.className = 'mot';
-    span.textContent = g.texte + ' (' + affichage.toUpperCase() + ')';
+    span.textContent = g.texte;
     span.dataset.role = g.role;
     span.dataset.index = index;
     span.onclick = () => {
