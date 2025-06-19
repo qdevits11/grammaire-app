@@ -17,6 +17,7 @@
 
   <div style="margin-top: 7vh;"></div>
   <h1>Quel est le rôle de chaque groupe ?</h1>
+  <div id="phrase-original" class="phrase-original"></div>
   <div class="phrase" id="phrase">Chargement de la phrase...</div>
   <div>
     <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
@@ -50,27 +51,21 @@ fetch('./data.json')
 
 function renderPhrase() {
   const phraseObj = phrases[current];
-  const phraseTexte = phraseObj.phrase;
-  let html = phraseTexte;
+  const container = document.getElementById('phrase');
+  container.innerHTML = '';
   document.getElementById('feedback').textContent = '';
   document.getElementById('nextBtn').disabled = true;
   réponsesCorrectes = new Set();
   selected = null;
 
-  // Remplace chaque groupe par un <span>
+  document.getElementById('phrase-original').textContent = phraseObj.phrase;
+
   phraseObj.groupes.forEach((g, index) => {
-    const escaped = g.texte.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const pattern = new RegExp(escaped, 'i'); // ignore la casse
-    html = html.replace(
-      pattern,
-      `<span class="mot" data-role="${g.role}" data-index="${index}">${g.texte}</span>`
-    );
-  });
-
-  const container = document.getElementById('phrase');
-  container.innerHTML = html;
-
-  container.querySelectorAll('.mot').forEach(span => {
+    const span = document.createElement('span');
+    span.className = 'mot';
+    span.textContent = g.texte;
+    span.dataset.role = g.role;
+    span.dataset.index = index;
     span.onclick = () => {
       if (span.classList.contains('bleu') || span.classList.contains('rouge')) return;
       document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
@@ -78,6 +73,8 @@ function renderPhrase() {
       span.classList.add('selected');
       document.getElementById('feedback').textContent = '';
     };
+    container.appendChild(span);
+    container.appendChild(document.createTextNode(' '));
   });
 }
 
@@ -105,7 +102,7 @@ function checkAnswer(answer) {
     updateScoreboard();
   } else {
     totalErreurs++;
-    totalPoints--;
+    totalPoints--; // ⬅️ retire 1 point à chaque erreur
     document.getElementById('sound-bad').play();
     updateScoreboard();
     document.getElementById('feedback').textContent = `❌ Mauvaise réponse.`;
