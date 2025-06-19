@@ -26,7 +26,7 @@ body {
 }
 
 .phrase {
-  font-size: clamp(1.5rem, 3vw, 1.6rem); /* même que .mot */
+  font-size: clamp(2rem, 3vw, 1.6rem); /* même que .mot */
   margin: 5vh auto;
   max-width: 90vw;
   background-color: #ffffff;
