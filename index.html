@@ -8,10 +8,15 @@
 </head>
 <body>
   <div class="top-bar">
-  <button onclick="resetScores()">🔄 Réinitialiser</button>
-</div>
-<div style="margin-top: 7vh;"></div>
-<h1 id="titre-phrase" style="font-size: clamp(2rem, 6vw, 3.5rem); margin-bottom: 2vh;">Quel est le rôle de chaque groupe ?</h1>
+    <div id="scoreboard">
+      Points : <span id="points">0</span> | Erreurs : <span id="errors">0</span>
+      <div class="stars" id="stars"></div>
+    </div>
+    <button onclick="resetScores()">🔄 Réinitialiser</button>
+  </div>
+
+  <div style="margin-top: 7vh;"></div>
+  <h1 id="titre-phrase" style="font-size: clamp(2rem, 6vw, 3.5rem); margin-bottom: 2vh;">Quel est le rôle de chaque groupe ?</h1>
   <div class="phrase" id="phrase">Chargement de la phrase...</div>
   <div>
     <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
@@ -20,12 +25,9 @@
     <button onclick="checkAnswer('civ')">🔴 GCIV</button>
   </div>
   <p id="feedback"></p>
-  <div id="scoreboard">
-    Points : <span id="points">0</span> | Erreurs : <span id="errors">0</span>
-    <div class="stars" id="stars"></div>
-  </div>
   <button id="nextBtn" onclick="nextPhrase()" disabled>👉 Phrase suivante</button>
   <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+
 <script>
 let phrases = [];
 let current = 0;
