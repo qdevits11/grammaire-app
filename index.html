@@ -2,12 +2,13 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Révision Grammaire</title>
   <style>
     body {
-      font-family: 'Arial Rounded MT Bold', Arial, sans-serif;
-      padding: 30px;
-      background: #f0faff;
+      font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
+      padding: 2vw;
+      background: #f9f9f9;
       text-align: center;
     }
 
@@ -19,7 +20,7 @@
     }
 
     .top-bar h1 {
-      font-size: 1.8em;
+      font-size: clamp(1.5rem, 4vw, 3rem);
       color: #333;
       margin: 0;
       padding: 0;
@@ -31,204 +32,100 @@
       right: 0;
       top: 50%;
       transform: translateY(-50%);
+      font-size: clamp(1rem, 2.5vw, 1.5rem);
     }
 
     .phrase {
-      font-size: 1.6em;
-      margin: 20px auto 10px;
-      max-width: 700px;
+      font-size: clamp(1.4rem, 4vw, 2.5rem);
+      margin: 5vh auto;
+      max-width: 90vw;
+      background-color: #ffffff;
+      padding: 2vw;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     .mot {
-      padding: 6px 8px;
+      padding: 1vw 2vw;
       cursor: pointer;
+      font-size: clamp(1.2rem, 4vw, 2rem);
       color: black;
       text-decoration: none;
       border-bottom: none;
-      transition: border-bottom 0.3s;
+      transition: all 0.3s;
       display: inline-block;
-      border-radius: 6px;
+      border-radius: 12px;
+      background-color: #ffffff;
+      margin: 1vw;
     }
 
     .mot.selected {
       outline: 3px dashed gray;
-      background-color: #e0f0ff;
+      background-color: #d1eaff;
     }
 
     .bleu {
-      border-bottom: 4px solid blue !important;
+      border-bottom: 6px solid blue !important;
     }
 
     .rouge {
-      border-bottom: 4px solid red !important;
+      border-bottom: 6px solid red !important;
     }
 
     #feedback {
-      margin-top: 15px;
+      margin-top: 4vw;
       font-weight: bold;
-      font-size: 1.2em;
+      font-size: clamp(1rem, 3.5vw, 2rem);
+      color: #444;
     }
 
     #scoreboard {
-      margin-top: 20px;
-      font-size: 1.1em;
+      margin-top: 5vw;
+      font-size: clamp(1rem, 3.5vw, 2rem);
     }
 
     .stars {
-      margin-top: 10px;
-      font-size: 1.5em;
+      margin-top: 2vw;
+      font-size: clamp(1.5rem, 5vw, 3rem);
       color: gold;
     }
 
     button {
-      padding: 12px 20px;
-      margin: 10px;
-      font-size: 1.1em;
-      border-radius: 10px;
-      background-color: #ffffff;
+      padding: 1em 1.5em;
+      margin: 2vw;
+      font-size: clamp(1rem, 3.5vw, 2rem);
+      border-radius: 14px;
+      background-color: #f2f2f2;
       border: 2px solid #ccc;
       cursor: pointer;
-      transition: 0.3s;
+      transition: all 0.3s ease;
     }
 
     button:hover {
-      background-color: #e6f7ff;
+      background-color: #e6e6e6;
     }
   </style>
 </head>
 <body>
-
   <div class="top-bar">
-    <h1 id="titre-phrase">Quel est le rôle de chaque groupe ?</h1>
-    <button onclick="resetScores()">🔄 Réinitialiser</button>
-  </div>
-
+  <button onclick="resetScores()">🔄 Réinitialiser</button>
+</div>
+<div style="margin-top: 15vh;"></div>
+<h1 id="titre-phrase">Quel est le rôle de chaque groupe ?</h1>
   <div class="phrase" id="phrase"></div>
-
   <div>
     <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
     <button onclick="checkAnswer('verbe')">🔴 Verbe</button>
     <button onclick="checkAnswer('cdv')">🔴 CDV</button>
     <button onclick="checkAnswer('civ')">🔴 CIV</button>
   </div>
-
   <p id="feedback"></p>
   <div id="scoreboard">
     Points : <span id="points">0</span> | Erreurs : <span id="errors">0</span>
     <div class="stars" id="stars"></div>
   </div>
-
-  <button id="nextBtn" onclick="nextPhrase()" disabled>Phrase suivante</button>
-
+  <button id="nextBtn" onclick="nextPhrase()" disabled>👉 Phrase suivante</button>
   <audio id="sound-good" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
   <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
-
-  <script>
-    let phrases = [];
-    let current = 0;
-    let selected = null;
-    let usedIndices = [];
-    let réponsesCorrectes = new Set();
-    let totalPoints = 0;
-    let totalErreurs = 0;
-
-    fetch('./data.json')
-      .then(response => response.json())
-      .then(data => {
-        phrases = data;
-        nextPhrase();
-      })
-      .catch(err => {
-        document.getElementById('phrase').textContent = "Erreur de chargement du fichier data.json";
-        console.error(err);
-      });
-
-    function renderPhrase() {
-      const container = document.getElementById('phrase');
-      container.innerHTML = '';
-      document.getElementById('feedback').textContent = '';
-      document.getElementById('nextBtn').disabled = true;
-      réponsesCorrectes = new Set();
-      selected = null;
-
-      const phrase = phrases[current];
-      document.getElementById('titre-phrase').textContent = phrase.phrase;
-
-      phrase.groupes.forEach((g, index) => {
-        const span = document.createElement('span');
-        span.className = 'mot';
-        span.textContent = g.texte;
-        span.dataset.role = g.role;
-        span.dataset.index = index;
-        span.onclick = () => {
-          if (span.classList.contains('bleu') || span.classList.contains('rouge')) return;
-          document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
-          selected = span;
-          span.classList.add('selected');
-          document.getElementById('feedback').textContent = '';
-        };
-        container.appendChild(span);
-        container.appendChild(document.createTextNode(' '));
-      });
-    }
-
-    function updateScoreboard() {
-      document.getElementById('points').textContent = totalPoints;
-      document.getElementById('errors').textContent = totalErreurs;
-      const starCount = totalPoints >= 30 ? 3 : totalPoints >= 20 ? 2 : totalPoints >= 10 ? 1 : 0;
-      document.getElementById('stars').textContent = '⭐'.repeat(starCount);
-    }
-
-    function checkAnswer(answer) {
-      if (!selected) {
-        alert("Clique sur un groupe de mots.");
-        return;
-      }
-
-      const role = selected.dataset.role;
-      const idx = selected.dataset.index;
-      selected.classList.remove('selected');
-
-      if (role === answer) {
-        selected.classList.add(role === 'sujet' ? 'bleu' : 'rouge');
-        réponsesCorrectes.add(idx);
-        totalPoints++;
-        document.getElementById('sound-good').play();
-        updateScoreboard();
-      } else {
-        totalErreurs++;
-        document.getElementById('sound-bad').play();
-        updateScoreboard();
-        document.getElementById('feedback').textContent = `❌ Mauvaise réponse.`;
-        return;
-      }
-
-      const total = phrases[current].groupes.length;
-      if (réponsesCorrectes.size === total) {
-        document.getElementById('feedback').textContent = `✅ Bravo ! Tu as tout trouvé.`;
-        document.getElementById('nextBtn').disabled = false;
-      }
-    }
-
-    function nextPhrase() {
-      if (usedIndices.length === phrases.length) usedIndices = [];
-
-      let index;
-      do {
-        index = Math.floor(Math.random() * phrases.length);
-      } while (usedIndices.includes(index));
-
-      usedIndices.push(index);
-      current = index;
-      renderPhrase();
-    }
-
-    function resetScores() {
-      totalPoints = 0;
-      totalErreurs = 0;
-      updateScoreboard();
-    }
-  </script>
-
 </body>
 </html>
