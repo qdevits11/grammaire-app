@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Révision Grammaire - Sujet / Verbe / CDV / CIV</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+      background: #f4f4f4;
+      text-align: center;
+    }
+
+    .phrase {
+      font-size: 1.4em;
+      margin: 20px auto;
+      max-width: 600px;
+    }
+
+    .mot {
+      padding: 4px 6px;
+      cursor: pointer;
+      border-bottom: 2px dotted gray;
+      margin: 0 2px;
+      transition: background 0.3s, color 0.3s;
+      display: inline-block;
+    }
+
+    .mot.selected {
+      background-color: #ffffcc;
+    }
+
+    .correct {
+      background-color: #c6f6c6 !important;
+    }
+
+    .incorrect {
+      background-color: #f6c6c6 !important;
+    }
+
+    .bleu { color: blue; font-weight: bold; }
+    .rouge { color: red; font-weight: bold; }
+
+    #feedback {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      font-size: 1em;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Quel est le rôle de chaque groupe ?</h2>
+
+  <div class="phrase" id="phrase"></div>
+
+  <div>
+    <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
+    <button onclick="checkAnswer('verbe')">🔴 Verbe</button>
+    <button onclick="checkAnswer('cdv')">🔴 CDV</button>
+    <button onclick="checkAnswer('civ')">🔴 CIV</button>
+  </div>
+
+  <p id="feedback"></p>
+  <button onclick="nextPhrase()">Phrase suivante</button>
+
+  <script>
+    const phrases = [
+      {
+        groupes: [
+          { texte: "Les parents", role: "sujet" },
+          { texte: "regardent", role: "verbe" },
+          { texte: "le spectacle", role: "cdv" }
+        ]
+      },
+      {
+        groupes: [
+          { texte: "Sous le chapiteau", role: "civ" },
+          { texte: "ils", role: "sujet" },
+          { texte: "mangent", role: "verbe" },
+          { texte: "un bon dessert", role: "cdv" }
+        ]
+      },
+      {
+        groupes: [
+          { texte: "Jafar", role: "sujet" },
+          { texte: "parle", role: "verbe" },
+          { texte: "à Aladdin", role: "civ" }
+        ]
+      },
+      {
+        groupes: [
+          { texte: "Hippolyte", role: "sujet" },
+          { texte: "prend", role: "verbe" },
+          { texte: "son bâton de feu", role: "cdv" }
+        ]
+      }
+    ];
+
+    let current = 0;
+    let selected = null;
+
+    function renderPhrase() {
+      const container = document.getElementById('phrase');
+      container.innerHTML = '';
+      document.getElementById('feedback').textContent = '';
+      selected = null;
+
+      phrases[current].groupes.forEach(g => {
+        const span = document.createElement('span');
+        span.className = 'mot';
+        span.textContent = g.texte;
+        span.dataset.role = g.role;
+        span.onclick = () => {
+          document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
+          selected = span;
+          span.classList.add('selected');
+          document.getElementById('feedback').textContent = '';
+        };
+        container.appendChild(span);
+        container.appendChild(document.createTextNode(' '));
+      });
+    }
+
+    function checkAnswer(answer) {
+      if (!selected) {
+        alert("Clique sur un groupe de mots.");
+        return;
+      }
+      const role = selected.dataset.role;
+
+      if (role === answer) {
+        selected.classList.add('correct');
+        document.getElementById('feedback').textContent = "✅ Bonne réponse !";
+      } else {
+        selected.classList.add('incorrect');
+        document.getElementById('feedback').textContent = `❌ Mauvaise réponse. Ce n’est pas ${answer.toUpperCase()}.`;
+      }
+
+      if (role === 'sujet') {
+        selected.classList.add('bleu');
+      } else {
+        selected.classList.add('rouge');
+      }
+    }
+
+    function nextPhrase() {
+      current = (current + 1) % phrases.length;
+      renderPhrase();
+    }
+
+    window.onload = renderPhrase;
+  </script>
+
+</body>
+</html>

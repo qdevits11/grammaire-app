@@ -1,0 +1,1686 @@
+[
+  {
+    "phrase": "Un oiseau donne à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants mange les clés à son frère.",
+    "groupes": [
+      {
+        "texte": "Les enfants",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "les clés",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le maître achète à son ami.",
+    "groupes": [
+      {
+        "texte": "Le maître",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille parle.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau aide à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "aide",
+        "role": "verbe"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon parle.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Ma sœur lit.",
+    "groupes": [
+      {
+        "texte": "Ma sœur",
+        "role": "sujet"
+      },
+      {
+        "texte": "lit",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Mon frère parle la lettre.",
+    "groupes": [
+      {
+        "texte": "Mon frère",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      },
+      {
+        "texte": "la lettre",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau achète son sac.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "son sac",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Papa explique.",
+    "groupes": [
+      {
+        "texte": "Papa",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Ma sœur écrit.",
+    "groupes": [
+      {
+        "texte": "Ma sœur",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau mange.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien parle à maman.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Mon frère répare une photo.",
+    "groupes": [
+      {
+        "texte": "Mon frère",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "une photo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon regarde un livre à la maîtresse.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "un livre",
+        "role": "cdv"
+      },
+      {
+        "texte": "à la maîtresse",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants aide à son ami.",
+    "groupes": [
+      {
+        "texte": "Les enfants",
+        "role": "sujet"
+      },
+      {
+        "texte": "aide",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants regarde un stylo à son copain.",
+    "groupes": [
+      {
+        "texte": "Les enfants",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "un stylo",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son copain",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves répare.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille regarde le dessin.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "le dessin",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Mon frère mange à la maîtresse.",
+    "groupes": [
+      {
+        "texte": "Mon frère",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "à la maîtresse",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman achète le ballon.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "le ballon",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman explique.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat achète son sac.",
+    "groupes": [
+      {
+        "texte": "Le chat",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "son sac",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Mon frère répare le dessin.",
+    "groupes": [
+      {
+        "texte": "Mon frère",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "le dessin",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau donne à son cousin.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son cousin",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau explique à maman.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman lit à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "lit",
+        "role": "verbe"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants mange une photo.",
+    "groupes": [
+      {
+        "texte": "Les enfants",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "une photo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon parle.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves lit un stylo.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "lit",
+        "role": "verbe"
+      },
+      {
+        "texte": "un stylo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Papa écrit à son copain.",
+    "groupes": [
+      {
+        "texte": "Papa",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son copain",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon écrit.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien répare.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon répare une photo.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "une photo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman mange à maman.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon aide un gâteau à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "aide",
+        "role": "verbe"
+      },
+      {
+        "texte": "un gâteau",
+        "role": "cdv"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille donne un gâteau à son frère.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "un gâteau",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants dessine à son ami.",
+    "groupes": [
+      {
+        "texte": "Les enfants",
+        "role": "sujet"
+      },
+      {
+        "texte": "dessine",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman donne son sac à maman.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "son sac",
+        "role": "cdv"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves regarde une chanson.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "une chanson",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Mon frère donne.",
+    "groupes": [
+      {
+        "texte": "Mon frère",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau parle.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves répare un livre.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "un livre",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Ma sœur porte le dessin.",
+    "groupes": [
+      {
+        "texte": "Ma sœur",
+        "role": "sujet"
+      },
+      {
+        "texte": "porte",
+        "role": "verbe"
+      },
+      {
+        "texte": "le dessin",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau porte un stylo à papa.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "porte",
+        "role": "verbe"
+      },
+      {
+        "texte": "un stylo",
+        "role": "cdv"
+      },
+      {
+        "texte": "à papa",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau lit à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "lit",
+        "role": "verbe"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman mange un stylo.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "un stylo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman regarde.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Ma sœur parle une pomme à son copain.",
+    "groupes": [
+      {
+        "texte": "Ma sœur",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      },
+      {
+        "texte": "une pomme",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son copain",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon explique.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le maître dessine.",
+    "groupes": [
+      {
+        "texte": "Le maître",
+        "role": "sujet"
+      },
+      {
+        "texte": "dessine",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon regarde à papa.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "à papa",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien porte un livre.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "porte",
+        "role": "verbe"
+      },
+      {
+        "texte": "un livre",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille donne à maman.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman lit les clés à sa sœur.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "lit",
+        "role": "verbe"
+      },
+      {
+        "texte": "les clés",
+        "role": "cdv"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat achète.",
+    "groupes": [
+      {
+        "texte": "Le chat",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau dessine une pomme.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "dessine",
+        "role": "verbe"
+      },
+      {
+        "texte": "une pomme",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau mange.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat dessine une chanson.",
+    "groupes": [
+      {
+        "texte": "Le chat",
+        "role": "sujet"
+      },
+      {
+        "texte": "dessine",
+        "role": "verbe"
+      },
+      {
+        "texte": "une chanson",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman parle.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman écrit à son frère.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves répare un stylo.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "un stylo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille porte le dessin.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "porte",
+        "role": "verbe"
+      },
+      {
+        "texte": "le dessin",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien achète une photo.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "une photo",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves achète le ballon à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "le ballon",
+        "role": "cdv"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon donne un gâteau.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "un gâteau",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien donne son sac.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "son sac",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman mange une pomme à son ami.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "une pomme",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat achète.",
+    "groupes": [
+      {
+        "texte": "Le chat",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien achète.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman répare à son frère.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le maître explique une chanson à maman.",
+    "groupes": [
+      {
+        "texte": "Le maître",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      },
+      {
+        "texte": "une chanson",
+        "role": "cdv"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon dessine son sac à son frère.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "dessine",
+        "role": "verbe"
+      },
+      {
+        "texte": "son sac",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille explique un gâteau.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      },
+      {
+        "texte": "un gâteau",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Les élèves regarde à son cousin.",
+    "groupes": [
+      {
+        "texte": "Les élèves",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son cousin",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Papa donne à la maîtresse.",
+    "groupes": [
+      {
+        "texte": "Papa",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à la maîtresse",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman explique.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman répare une chanson à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "une chanson",
+        "role": "cdv"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman mange le jouet à son frère.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "le jouet",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le maître écrit.",
+    "groupes": [
+      {
+        "texte": "Le maître",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon dessine à son copain.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "dessine",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son copain",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau donne à son ami.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman achète son sac.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "achète",
+        "role": "verbe"
+      },
+      {
+        "texte": "son sac",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille mange à maman.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "à maman",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Maman donne un livre.",
+    "groupes": [
+      {
+        "texte": "Maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "un livre",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat écrit le dessin à son copain.",
+    "groupes": [
+      {
+        "texte": "Le chat",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      },
+      {
+        "texte": "le dessin",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son copain",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le garçon donne à son frère.",
+    "groupes": [
+      {
+        "texte": "Le garçon",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son frère",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien porte les clés.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "porte",
+        "role": "verbe"
+      },
+      {
+        "texte": "les clés",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau donne à son voisin.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "donne",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son voisin",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien répare à son ami.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "répare",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants écrit.",
+    "groupes": [
+      {
+        "texte": "Les enfants",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille explique.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "explique",
+        "role": "verbe"
+      }
+    ]
+  },
+  {
+    "phrase": "La fille aide le jouet.",
+    "groupes": [
+      {
+        "texte": "La fille",
+        "role": "sujet"
+      },
+      {
+        "texte": "aide",
+        "role": "verbe"
+      },
+      {
+        "texte": "le jouet",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Le maître lit une chanson à son cousin.",
+    "groupes": [
+      {
+        "texte": "Le maître",
+        "role": "sujet"
+      },
+      {
+        "texte": "lit",
+        "role": "verbe"
+      },
+      {
+        "texte": "une chanson",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son cousin",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Mon frère porte un stylo à son voisin.",
+    "groupes": [
+      {
+        "texte": "Mon frère",
+        "role": "sujet"
+      },
+      {
+        "texte": "porte",
+        "role": "verbe"
+      },
+      {
+        "texte": "un stylo",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son voisin",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Un oiseau parle les clés à sa sœur.",
+    "groupes": [
+      {
+        "texte": "Un oiseau",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      },
+      {
+        "texte": "les clés",
+        "role": "cdv"
+      },
+      {
+        "texte": "à sa sœur",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien regarde une pomme à son ami.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "regarde",
+        "role": "verbe"
+      },
+      {
+        "texte": "une pomme",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat écrit une chanson à son ami.",
+    "groupes": [
+      {
+        "texte": "Le chat",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      },
+      {
+        "texte": "une chanson",
+        "role": "cdv"
+      },
+      {
+        "texte": "à son ami",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien écrit une pomme.",
+    "groupes": [
+      {
+        "texte": "Le chien",
+        "role": "sujet"
+      },
+      {
+        "texte": "écrit",
+        "role": "verbe"
+      },
+      {
+        "texte": "une pomme",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "La maman mange à son cousin.",
+    "groupes": [
+      {
+        "texte": "La maman",
+        "role": "sujet"
+      },
+      {
+        "texte": "mange",
+        "role": "verbe"
+      },
+      {
+        "texte": "à son cousin",
+        "role": "civ"
+      }
+    ]
+  }
+]
