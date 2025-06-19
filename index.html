@@ -58,13 +58,10 @@ function renderPhrase() {
   réponsesCorrectes = new Set();
   selected = null;
 
-  // Affiche la phrase complète
   document.getElementById('phrase-original').textContent = phraseObj.phrase;
 
-  // Affiche les groupes cliquables dans le bon ordre
   phraseObj.groupes.forEach((g, index) => {
     const span = document.createElement('span');
-    let affichage = g.role === 'cdv' ? 'GCDV' : g.role === 'civ' ? 'GCIV' : g.role;
     span.className = 'mot';
     span.textContent = g.texte;
     span.dataset.role = g.role;
@@ -84,7 +81,7 @@ function renderPhrase() {
 function updateScoreboard() {
   document.getElementById('points').textContent = totalPoints;
   document.getElementById('errors').textContent = totalErreurs;
-  const starCount = totalPoints >= 30 ? 3 : totalPoints >= 20 ? 2 : totalPoints >= 10 ? 1 : 0;
+  const starCount = Math.floor(Math.max(0, totalPoints) / 10);
   document.getElementById('stars').textContent = '⭐'.repeat(starCount);
 }
 
@@ -105,6 +102,7 @@ function checkAnswer(answer) {
     updateScoreboard();
   } else {
     totalErreurs++;
+    totalPoints--; // ⬅️ retire 1 point à chaque erreur
     document.getElementById('sound-bad').play();
     updateScoreboard();
     document.getElementById('feedback').textContent = `❌ Mauvaise réponse.`;
