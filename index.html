@@ -4,120 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Révision Grammaire</title>
-  <style>
-    body {
-      font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
-      padding: 2vw;
-      background: #f9f9f9;
-      text-align: center;
-    }
-
-    .top-bar {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      position: relative;
-    }
-
-    .top-bar h1 {
-      font-size: clamp(1.5rem, 4vw, 3rem);
-      color: #333;
-      margin: 0;
-      padding: 0;
-      flex-grow: 1;
-    }
-
-    .top-bar button {
-      position: absolute;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: clamp(1rem, 2.5vw, 1.5rem);
-    }
-
-    .phrase {
-      font-size: clamp(1.4rem, 4vw, 2.5rem);
-      margin: 5vh auto;
-      max-width: 90vw;
-      background-color: #ffffff;
-      padding: 2vw;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    .mot {
-      padding: 1vw 2vw;
-      cursor: pointer;
-      font-size: clamp(1.2rem, 4vw, 2rem);
-      color: black;
-      text-decoration: none;
-      border-bottom: none;
-      transition: all 0.3s;
-      display: inline-block;
-      border-radius: 12px;
-      background-color: #ffffff;
-      margin: 1vw;
-    }
-
-    .mot.selected {
-      outline: 3px dashed gray;
-      background-color: #d1eaff;
-    }
-
-    .bleu {
-      border-bottom: 6px solid blue !important;
-    }
-
-    .rouge {
-      border-bottom: 6px solid red !important;
-    }
-
-    #feedback {
-      margin-top: 4vw;
-      font-weight: bold;
-      font-size: clamp(1rem, 3.5vw, 2rem);
-      color: #444;
-    }
-
-    #scoreboard {
-      margin-top: 5vw;
-      font-size: clamp(1rem, 3.5vw, 2rem);
-    }
-
-    .stars {
-      margin-top: 2vw;
-      font-size: clamp(1.5rem, 5vw, 3rem);
-      color: gold;
-    }
-
-    button {
-      padding: 1em 1.5em;
-      margin: 2vw;
-      font-size: clamp(1rem, 3.5vw, 2rem);
-      border-radius: 14px;
-      background-color: #f2f2f2;
-      border: 2px solid #ccc;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #e6e6e6;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="top-bar">
   <button onclick="resetScores()">🔄 Réinitialiser</button>
 </div>
-<div style="margin-top: 15vh;"></div>
-<h1 id="titre-phrase">Quel est le rôle de chaque groupe ?</h1>
+<div style="margin-top: 7vh;"></div>
+<h1 id="titre-phrase" style="font-size: clamp(2rem, 6vw, 3.5rem); margin-bottom: 2vh;">Quel est le rôle de chaque groupe ?</h1>
   <div class="phrase" id="phrase">Chargement de la phrase...</div>
   <div>
     <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
     <button onclick="checkAnswer('verbe')">🔴 Verbe</button>
-    <button onclick="checkAnswer('cdv')">🔴 CDV</button>
-    <button onclick="checkAnswer('civ')">🔴 CIV</button>
+    <button onclick="checkAnswer('cdv')">🔴 GCDV</button>
+    <button onclick="checkAnswer('civ')">🔴 GCIV</button>
   </div>
   <p id="feedback"></p>
   <div id="scoreboard">
@@ -125,7 +25,6 @@
     <div class="stars" id="stars"></div>
   </div>
   <button id="nextBtn" onclick="nextPhrase()" disabled>👉 Phrase suivante</button>
-  <audio id="sound-good" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
   <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
 <script>
 let phrases = [];
@@ -159,8 +58,9 @@ function renderPhrase() {
 
   phrase.groupes.forEach((g, index) => {
     const span = document.createElement('span');
+    let affichage = g.role === 'cdv' ? 'GCDV' : g.role === 'civ' ? 'GCIV' : g.role;
     span.className = 'mot';
-    span.textContent = g.texte;
+    span.textContent = g.texte + ' (' + affichage.toUpperCase() + ')';
     span.dataset.role = g.role;
     span.dataset.index = index;
     span.onclick = () => {
@@ -196,7 +96,6 @@ function checkAnswer(answer) {
     selected.classList.add(role === 'sujet' ? 'bleu' : 'rouge');
     réponsesCorrectes.add(idx);
     totalPoints++;
-    document.getElementById('sound-good').play();
     updateScoreboard();
   } else {
     totalErreurs++;
