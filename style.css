@@ -94,3 +94,11 @@ button {
 button:hover {
   background-color: #e6e6e6;
 }
+
+.phrase-original {
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: bold;
+  margin: 2vh auto;
+  max-width: 90vw;
+  color: #333;
+}

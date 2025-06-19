@@ -16,7 +16,8 @@
   </div>
 
   <div style="margin-top: 7vh;"></div>
-  <h1 id="titre-phrase" style="font-size: clamp(2rem, 6vw, 3.5rem); margin-bottom: 2vh;">Quel est le rôle de chaque groupe ?</h1>
+  <h1>Quel est le rôle de chaque groupe ?</h1>
+  <div id="phrase-original" class="phrase-original"></div>
   <div class="phrase" id="phrase">Chargement de la phrase...</div>
   <div>
     <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
@@ -37,18 +38,19 @@ let réponsesCorrectes = new Set();
 let totalPoints = 0;
 let totalErreurs = 0;
 
-fetch('./data.json')
+fetch('./data_groupes_ordonnes_v2.json')
   .then(response => response.json())
   .then(data => {
     phrases = data;
     nextPhrase();
   })
   .catch(err => {
-    document.getElementById('phrase').textContent = "Erreur de chargement du fichier data.json";
+    document.getElementById('phrase').textContent = "Erreur de chargement du fichier JSON";
     console.error(err);
   });
 
 function renderPhrase() {
+  const phraseObj = phrases[current];
   const container = document.getElementById('phrase');
   container.innerHTML = '';
   document.getElementById('feedback').textContent = '';
@@ -56,9 +58,11 @@ function renderPhrase() {
   réponsesCorrectes = new Set();
   selected = null;
 
-  const phrase = phrases[current];
+  // Affiche la phrase complète
+  document.getElementById('phrase-original').textContent = phraseObj.phrase;
 
-  phrase.groupes.forEach((g, index) => {
+  // Affiche les groupes cliquables dans le bon ordre
+  phraseObj.groupes.forEach((g, index) => {
     const span = document.createElement('span');
     let affichage = g.role === 'cdv' ? 'GCDV' : g.role === 'civ' ? 'GCIV' : g.role;
     span.className = 'mot';
