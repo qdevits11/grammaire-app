@@ -20,26 +20,23 @@
     .mot {
       padding: 4px 6px;
       cursor: pointer;
-      border-bottom: 2px dotted gray;
-      margin: 0 2px;
-      transition: color 0.3s, border-bottom 0.3s;
+      color: black;
+      text-decoration: none;
+      border-bottom: none;
+      transition: border-bottom 0.3s;
       display: inline-block;
     }
 
     .mot.selected {
-      background-color: #ffffcc;
+      outline: 2px dashed gray;
     }
 
     .bleu {
-      color: blue;
       border-bottom: 2px solid blue !important;
-      font-weight: bold;
     }
 
     .rouge {
-      color: red;
       border-bottom: 2px solid red !important;
-      font-weight: bold;
     }
 
     #feedback {
@@ -134,7 +131,11 @@
         alert("Clique sur un groupe de mots.");
         return;
       }
+
       const role = selected.dataset.role;
+      const isSujet = role === 'sujet';
+
+      selected.classList.remove('selected');
 
       if (role === answer) {
         document.getElementById('feedback').textContent = "✅ Bonne réponse !";
@@ -142,12 +143,7 @@
         document.getElementById('feedback').textContent = `❌ Mauvaise réponse. Ce n’est pas ${answer.toUpperCase()}.`;
       }
 
-      selected.classList.remove('selected');
-      if (role === 'sujet') {
-        selected.classList.add('bleu');
-      } else {
-        selected.classList.add('rouge');
-      }
+      selected.classList.add(isSujet ? 'bleu' : 'rouge');
     }
 
     function nextPhrase() {
