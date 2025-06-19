@@ -38,7 +38,7 @@ let réponsesCorrectes = new Set();
 let totalPoints = 0;
 let totalErreurs = 0;
 
-fetch('./data_groupes_ordonnes_v2.json')
+fetch('./data.json')
   .then(response => response.json())
   .then(data => {
     phrases = data;
