@@ -26,7 +26,7 @@ body {
 }
 
 .phrase {
-  font-size: clamp(1rem, 3vw, 1.6rem); /* même que .mot */
+  font-size: clamp(1.5rem, 3vw, 1.6rem); /* même que .mot */
   margin: 5vh auto;
   max-width: 90vw;
   background-color: #ffffff;
@@ -35,6 +35,7 @@ body {
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', Arial, sans-serif;
   line-height: 1.6;
+  margin-bottom: 4vh; 
 }
 
 .mot {
