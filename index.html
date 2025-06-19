@@ -85,28 +85,37 @@
         console.error(err);
       });
 
-    function renderPhrase() {
-      const container = document.getElementById('phrase');
-      container.innerHTML = '';
-      document.getElementById('feedback').textContent = '';
-      selected = null;
+function renderPhrase() {
+  const container = document.getElementById('phrase');
+  container.innerHTML = '';
+  document.getElementById('feedback').textContent = '';
+  selected = null;
 
-      const phrase = phrases[current];
-      phrase.groupes.forEach(g => {
-        const span = document.createElement('span');
-        span.className = 'mot';
-        span.textContent = g.texte;
-        span.dataset.role = g.role;
-        span.onclick = () => {
-          document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
-          selected = span;
-          span.classList.add('selected');
-          document.getElementById('feedback').textContent = '';
-        };
-        container.appendChild(span);
-        container.appendChild(document.createTextNode(' '));
-      });
-    }
+  const phrase = phrases[current];
+
+  // Afficher la phrase complète
+  const fullText = document.createElement('p');
+  fullText.style.fontStyle = 'italic';
+  fullText.textContent = phrase.phrase;
+  container.appendChild(fullText);
+
+  // Afficher les groupes à cliquer
+  phrase.groupes.forEach(g => {
+    const span = document.createElement('span');
+    span.className = 'mot';
+    span.textContent = g.texte;
+    span.dataset.role = g.role;
+    span.onclick = () => {
+      document.querySelectorAll('.mot').forEach(m => m.classList.remove('selected'));
+      selected = span;
+      span.classList.add('selected');
+      document.getElementById('feedback').textContent = '';
+    };
+    container.appendChild(span);
+    container.appendChild(document.createTextNode(' '));
+  });
+}
+
 
     function checkAnswer(answer) {
       if (!selected) {
