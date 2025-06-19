@@ -1,4 +1,76 @@
 [
+    {
+    "phrase": "Les parents regardent le spectacle.",
+    "groupes": [
+      {
+        "texte": "Les parents",
+        "role": "sujet"
+      },
+      {
+        "texte": "regardent",
+        "role": "verbe"
+      },
+      {
+        "texte": "le spectacle",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Sous le chapiteau, ils mangent un bon dessert.",
+    "groupes": [
+      {
+        "texte": "Sous le chapiteau",
+        "role": "civ"
+      },
+      {
+        "texte": "ils",
+        "role": "sujet"
+      },
+      {
+        "texte": "mangent",
+        "role": "verbe"
+      },
+      {
+        "texte": "un bon dessert",
+        "role": "cdv"
+      }
+    ]
+  },
+  {
+    "phrase": "Jafar parle à Aladdin.",
+    "groupes": [
+      {
+        "texte": "Jafar",
+        "role": "sujet"
+      },
+      {
+        "texte": "parle",
+        "role": "verbe"
+      },
+      {
+        "texte": "à Aladdin",
+        "role": "civ"
+      }
+    ]
+  },
+  {
+    "phrase": "Hippolyte prend son bâton de feu.",
+    "groupes": [
+      {
+        "texte": "Hippolyte",
+        "role": "sujet"
+      },
+      {
+        "texte": "prend",
+        "role": "verbe"
+      },
+      {
+        "texte": "son bâton de feu",
+        "role": "cdv"
+      }
+    ]
+  }
   {
     "phrase": "Un oiseau donne à sa sœur.",
     "groupes": [

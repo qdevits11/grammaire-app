@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Révision Grammaire - Sujet / Verbe / CDV / CIV</title>
+  <meta charset="UTF-8" />
+  <title>Révision Grammaire</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -69,40 +69,21 @@
   <button onclick="nextPhrase()">Phrase suivante</button>
 
   <script>
-    const phrases = [
-      {
-        groupes: [
-          { texte: "Les parents", role: "sujet" },
-          { texte: "regardent", role: "verbe" },
-          { texte: "le spectacle", role: "cdv" }
-        ]
-      },
-      {
-        groupes: [
-          { texte: "Sous le chapiteau", role: "civ" },
-          { texte: "ils", role: "sujet" },
-          { texte: "mangent", role: "verbe" },
-          { texte: "un bon dessert", role: "cdv" }
-        ]
-      },
-      {
-        groupes: [
-          { texte: "Jafar", role: "sujet" },
-          { texte: "parle", role: "verbe" },
-          { texte: "à Aladdin", role: "civ" }
-        ]
-      },
-      {
-        groupes: [
-          { texte: "Hippolyte", role: "sujet" },
-          { texte: "prend", role: "verbe" },
-          { texte: "son bâton de feu", role: "cdv" }
-        ]
-      }
-    ];
-
+    let phrases = [];
     let current = 0;
     let selected = null;
+
+    // Charger le fichier JSON
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        phrases = data;
+        renderPhrase();
+      })
+      .catch(err => {
+        document.getElementById('phrase').textContent = "Erreur de chargement du fichier data.json";
+        console.error(err);
+      });
 
     function renderPhrase() {
       const container = document.getElementById('phrase');
@@ -110,7 +91,8 @@
       document.getElementById('feedback').textContent = '';
       selected = null;
 
-      phrases[current].groupes.forEach(g => {
+      const phrase = phrases[current];
+      phrase.groupes.forEach(g => {
         const span = document.createElement('span');
         span.className = 'mot';
         span.textContent = g.texte;
@@ -131,7 +113,6 @@
         alert("Clique sur un groupe de mots.");
         return;
       }
-
       const role = selected.dataset.role;
       const isSujet = role === 'sujet';
 
@@ -150,8 +131,6 @@
       current = (current + 1) % phrases.length;
       renderPhrase();
     }
-
-    window.onload = renderPhrase;
   </script>
 
 </body>
