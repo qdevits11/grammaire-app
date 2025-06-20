@@ -355,5 +355,125 @@
         "role": "civ"
       }
     ]
+  },
+    {
+    "phrase": "Tous les matins, Lucie lit un livre captivant.",
+    "groupes": [
+      { "texte": "Lucie", "role": "sujet" },
+      { "texte": "lit", "role": "verbe" },
+      { "texte": "un livre captivant", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Après le repas, les enfants rangent la vaisselle.",
+    "groupes": [
+      { "texte": "les enfants", "role": "sujet" },
+      { "texte": "rangent", "role": "verbe" },
+      { "texte": "la vaisselle", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "En hiver, mon frère construit un bonhomme de neige.",
+    "groupes": [
+      { "texte": "mon frère", "role": "sujet" },
+      { "texte": "construit", "role": "verbe" },
+      { "texte": "un bonhomme de neige", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Pendant la récréation, les élèves jouent au ballon.",
+    "groupes": [
+      { "texte": "les élèves", "role": "sujet" },
+      { "texte": "jouent", "role": "verbe" },
+      { "texte": "au ballon", "role": "civ" }
+    ]
+  },
+  {
+    "phrase": "Ce soir, maman prépare une tarte aux pommes.",
+    "groupes": [
+      { "texte": "maman", "role": "sujet" },
+      { "texte": "prépare", "role": "verbe" },
+      { "texte": "une tarte aux pommes", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "À la bibliothèque, Paul emprunte trois romans.",
+    "groupes": [
+      { "texte": "Paul", "role": "sujet" },
+      { "texte": "emprunte", "role": "verbe" },
+      { "texte": "trois romans", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Le samedi, nous visitons le musée d’histoire naturelle.",
+    "groupes": [
+      { "texte": "nous", "role": "sujet" },
+      { "texte": "visitons", "role": "verbe" },
+      { "texte": "le musée d’histoire naturelle", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Sur la plage, les enfants ramassent des coquillages.",
+    "groupes": [
+      { "texte": "les enfants", "role": "sujet" },
+      { "texte": "ramassent", "role": "verbe" },
+      { "texte": "des coquillages", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "En classe, la maîtresse explique une nouvelle leçon.",
+    "groupes": [
+      { "texte": "la maîtresse", "role": "sujet" },
+      { "texte": "explique", "role": "verbe" },
+      { "texte": "une nouvelle leçon", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Chaque été, mes cousins viennent passer une semaine chez nous.",
+    "groupes": [
+      { "texte": "mes cousins", "role": "sujet" },
+      { "texte": "viennent passer", "role": "verbe" },
+      { "texte": "une semaine chez nous", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Le chat observe les oiseaux par la fenêtre.",
+    "groupes": [
+      { "texte": "Le chat", "role": "sujet" },
+      { "texte": "observe", "role": "verbe" },
+      { "texte": "les oiseaux", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Avec ses amis, Hugo organise une chasse au trésor.",
+    "groupes": [
+      { "texte": "Hugo", "role": "sujet" },
+      { "texte": "organise", "role": "verbe" },
+      { "texte": "une chasse au trésor", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Le matin, je prends mon petit-déjeuner rapidement.",
+    "groupes": [
+      { "texte": "je", "role": "sujet" },
+      { "texte": "prends", "role": "verbe" },
+      { "texte": "mon petit-déjeuner", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Dans le jardin, papa arrose les fleurs colorées.",
+    "groupes": [
+      { "texte": "papa", "role": "sujet" },
+      { "texte": "arrose", "role": "verbe" },
+      { "texte": "les fleurs colorées", "role": "cdv" }
+    ]
+  },
+  {
+    "phrase": "Pour son anniversaire, Léa reçoit un joli cadeau.",
+    "groupes": [
+      { "texte": "Léa", "role": "sujet" },
+      { "texte": "reçoit", "role": "verbe" },
+      { "texte": "un joli cadeau", "role": "cdv" }
+    ]
   }
 ]
