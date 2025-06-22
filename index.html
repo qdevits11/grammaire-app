@@ -139,22 +139,30 @@
     }
   }
   
-  // Initialiser les jeux dès que possible
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('DOM chargé, initialisation des jeux...');
-      initGames().then(() => {
-        console.log('Jeux initialisés, sélection du jeu par défaut...');
-        // Sélectionner le jeu par défaut après le chargement des données
-        selectGame('roles');
-      }).catch(err => console.error('Erreur lors de l\'initialisation des jeux:', err));
-    });
-  } else {
-    console.log('DOM déjà chargé, initialisation directe des jeux...');
+  // Fonction pour démarrer l'application une fois le DOM chargé
+  function startApp() {
+    console.log('Démarrage de l\'application...');
+    
+    // Initialiser les jeux
     initGames().then(() => {
-      console.log('Jeux initialisés, sélection du jeu par défaut...');
+      console.log('Jeux initialisés avec succès');
+      console.log('Données du jeu futur:', window.games?.futur?.data);
+      
+      // Sélectionner le jeu par défaut
       selectGame('roles');
-    }).catch(err => console.error('Erreur lors de l\'initialisation des jeux:', err));
+      
+      // Afficher un message de chargement terminé
+      console.log('Application prête');
+    }).catch(error => {
+      console.error('Erreur lors du chargement de l\'application:', error);
+    });
+  }
+  
+  // Démarrer l'application une fois le DOM chargé
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+  } else {
+    startApp();
   }
   </script>
 </head>
@@ -345,27 +353,49 @@ function selectGame(game) {
 }
 
 function resetGame(game = currentGame) {
-  const gameData = games[game];
+  console.log(`Réinitialisation du jeu: ${game}`);
+  
+  const gameData = window.games?.[game];
+  if (!gameData) {
+    console.error('Impossible de réinitialiser: jeu non trouvé:', game);
+    return;
+  }
+  
+  // Réinitialiser les scores et l'état
   gameData.totalPoints = 0;
   gameData.totalErreurs = 0;
   gameData.usedIndices = [];
-  gameData.current = 0;
-  gameData.réponsesCorrectes = new Set();
   
-  // Réinitialiser l'affichage selon le type de jeu
-  switch(game) {
-    case 'roles':
-      document.getElementById('feedback').textContent = '';
-      document.getElementById('nextBtn').disabled = true;
-      break;
-    case 'futur':
-      document.getElementById('futur-feedback').textContent = '';
-      document.getElementById('nextFutur').disabled = true;
-      break;
+  // Pour le jeu des rôles, réinitialiser les réponses correctes
+  if (game === 'roles') {
+    gameData.réponsesCorrectes = new Set();
   }
   
+  // S'assurer que current est défini
+  gameData.current = 0;
+  
+  console.log('Données du jeu après réinitialisation:', gameData);
+  
+  // Choisir une phrase aléatoire
+  nextPhrase(game);
+  
+  // Mettre à jour le score
   updateScoreboard(game);
-  renderPhrase(game);
+  
+  // Réinitialiser l'affichage
+  if (game === 'futur') {
+    const feedback = document.getElementById('futur-feedback');
+    if (feedback) {
+      feedback.textContent = '';
+      feedback.style.color = '';
+    }
+  } else {
+    const feedback = document.getElementById('feedback');
+    if (feedback) {
+      feedback.textContent = '';
+    }
+  }
+  document.getElementById('nextBtn').disabled = true;
 }
 
 function updateScoreboard(game = currentGame) {
@@ -377,13 +407,26 @@ function updateScoreboard(game = currentGame) {
 }
 
 function renderPhrase(game = currentGame) {
-  const gameData = games[game];
-  if (!gameData || !gameData.data || !gameData.data[gameData.current]) {
-    console.error('Données manquantes pour le rendu de la phrase');
+  console.log(`Rendu de la phrase pour le jeu: ${game}`);
+  
+  const gameData = window.games?.[game];
+  if (!gameData) {
+    console.error('Données du jeu non trouvées pour:', game);
+    return;
+  }
+  
+  if (!gameData.data || !Array.isArray(gameData.data) || gameData.data.length === 0) {
+    console.error('Aucune donnée de phrase disponible pour le jeu:', game);
+    return;
+  }
+  
+  if (typeof gameData.current === 'undefined' || !gameData.data[gameData.current]) {
+    console.error('Index de phrase invalide:', gameData.current, 'pour le jeu:', game);
     return;
   }
   
   const phraseObj = gameData.data[gameData.current];
+  console.log('Phrase actuelle:', phraseObj);
   
   // Gérer le jeu des rôles
   if (game === 'roles') {
