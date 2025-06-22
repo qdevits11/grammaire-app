@@ -419,8 +419,17 @@ function renderPhrase(game = currentGame) {
   // Gérer le jeu du futur simple
   else if (game === 'futur') {
     const container = document.getElementById('futur-phrase');
-    container.textContent = phraseObj.phrase;
-    document.getElementById('futur-feedback').textContent = '';
+    if (!container) {
+      console.error('Élément futur-phrase non trouvé');
+      return;
+    }
+    container.textContent = phraseObj.phrase || 'Phrase non disponible';
+    
+    const feedbackElement = document.getElementById('futur-feedback');
+    if (feedbackElement) {
+      feedbackElement.textContent = '';
+      feedbackElement.style.color = '';
+    }
     document.getElementById('nextFutur').disabled = true;
   }
 }
