@@ -112,6 +112,23 @@
       });
   }
 
+  // Fonction pour charger les données du jeu roles
+  async function loadRolesData() {
+    console.log('Début du chargement de data.json...');
+    try {
+      const response = await fetch('data.json');
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log('Données du jeu roles chargées avec succès');
+      return data;
+    } catch (error) {
+      console.error('Erreur lors du chargement des données des rôles:', error);
+      return [];
+    }
+  }
+
   // Fonction pour initialiser les jeux
   async function initGames() {
     if (!window.games) {
@@ -135,15 +152,28 @@
         }
       };
       
-      // Charger les données du futur
+      // Charger les données des deux jeux en parallèle
       try {
-        const futurData = await loadFuturData();
-        if (futurData.length > 0) {
+        const [rolesData, futurData] = await Promise.all([
+          loadRolesData(),
+          loadFuturData()
+        ]);
+        
+        // Mettre à jour les données des jeux
+        if (rolesData && rolesData.length > 0) {
+          window.games.roles.data = rolesData;
+          console.log('Données du jeu roles chargées avec succès');
+        } else {
+          console.warn('Aucune donnée chargée pour le jeu roles');
+        }
+        
+        if (futurData && futurData.length > 0) {
           window.games.futur.data = futurData;
           console.log('Données du jeu futur chargées avec succès');
         } else {
           console.warn('Aucune donnée chargée pour le jeu futur');
         }
+        
       } catch (error) {
         console.error('Erreur lors du chargement des données:', error);
       }
@@ -153,22 +183,37 @@
   }
   
   // Fonction pour démarrer l'application une fois le DOM chargé
-  function startApp() {
+  async function startApp() {
     console.log('Démarrage de l\'application...');
     
-    // Initialiser les jeux
-    initGames().then(() => {
-      console.log('Jeux initialisés avec succès');
+    try {
+      // Initialiser les jeux et attendre qu'ils soient prêts
+      await initGames();
+      
+      // Vérifier que les jeux sont correctement initialisés
+      if (!window.games) {
+        throw new Error('Échec de l\'initialisation des jeux');
+      }
+      
+      console.log('Jeux initialisés avec succès:', Object.keys(window.games));
       console.log('Données du jeu futur:', window.games?.futur?.data);
       
-      // Sélectionner le jeu par défaut
+      // Sélectionner le jeu par défaut (roles)
       selectGame('roles');
       
       // Afficher un message de chargement terminé
       console.log('Application prête');
-    }).catch(error => {
-      console.error('Erreur lors du chargement de l\'application:', error);
-    });
+      
+    } catch (error) {
+      console.error('Erreur lors du démarrage de l\'application:', error);
+      // Afficher un message d'erreur à l'utilisateur
+      const errorDiv = document.createElement('div');
+      errorDiv.style.color = 'red';
+      errorDiv.style.padding = '20px';
+      errorDiv.style.textAlign = 'center';
+      errorDiv.textContent = 'Une erreur est survenue lors du chargement de l\'application. Veuillez rafraîchir la page.';
+      document.body.insertBefore(errorDiv, document.body.firstChild);
+    }
   }
   
   // Démarrer l'application une fois le DOM chargé
@@ -332,8 +377,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// Charger le jeu par défaut (rôles)
-selectGame('roles');
+// Le chargement du jeu par défaut est maintenant géré dans startApp()
 
 function selectGame(game) {
   // Fermer le menu sur mobile/tablette
@@ -422,9 +466,14 @@ function updateScoreboard(game = currentGame) {
 function renderPhrase(game = currentGame) {
   console.log(`Rendu de la phrase pour le jeu: ${game}`);
   
-  const gameData = window.games?.[game];
+  if (!window.games) {
+    console.error('Jeux non initialisés');
+    return;
+  }
+  
+  const gameData = window.games[game];
   if (!gameData) {
-    console.error('Données du jeu non trouvées pour:', game);
+    console.error('Données du jeu non trouvées pour:', game, 'Disponibles:', Object.keys(window.games));
     return;
   }
   
@@ -530,9 +579,14 @@ function checkAnswer(answer, game = currentGame) {
 
 
 function nextPhrase(game = currentGame) {
-  const gameData = games[game];
+  if (!window.games) {
+    console.error('Jeux non initialisés');
+    return;
+  }
+  
+  const gameData = window.games[game];
   if (!gameData) {
-    console.error('Jeu non trouvé:', game);
+    console.error('Jeu non trouvé:', game, 'Disponibles:', Object.keys(window.games));
     return;
   }
   
@@ -565,6 +619,7 @@ function nextPhrase(game = currentGame) {
   console.log('Index actuel après mise à jour:', gameData.current);
   
   // Afficher la nouvelle phrase
+  console.log('Appel de renderPhrase avec game:', game);
   renderPhrase(game);
   
   // Désactiver le bouton suivant jusqu'à ce qu'une réponse soit donnée
