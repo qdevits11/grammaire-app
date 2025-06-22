@@ -98,22 +98,10 @@
           throw new Error('Format de données invalide dans futur.json');
         }
         console.log('Données brutes du futur chargées:', data);
-        const processedData = data.data.map(item => ({
-          phrase: item.phrase,
-          auxiliaire: item.type,
-          correct: item.correct
-        }));
-        console.log('Données du futur transformées:', processedData);
-        return processedData;
+        return data.data; // Retourne directement les données sans transformation
       })
       .catch(error => {
         console.error('Erreur lors du chargement des données du futur:', error);
-        // En cas d'erreur, on retourne des données par défaut pour éviter que le jeu ne plante
-        console.warn('Utilisation des données par défaut pour le jeu futur');
-        return [
-          { phrase: "Je chanterai une chanson", auxiliaire: "er", correct: "chanterai" },
-          { phrase: "Tu finiras ton travail", auxiliaire: "ir", correct: "finiras" }
-        ];
       });
   }
 
@@ -276,24 +264,31 @@ fetch('./data.json')
     document.getElementById('phrase').textContent = 'Erreur : Impossible de charger les données des rôles.';
   });
 
-// Données en dur pour le jeu futur
-games.futur.data = [
-  {
-    phrase: "Je mangerai une pomme demain.",
-    auxiliaire: "être"
-  },
-  {
-    phrase: "Elle viendra nous voir la semaine prochaine.",
-    auxiliaire: "être"
-  },
-  {
-    phrase: "Ils travailleront toute la journée.",
-    auxiliaire: "avoir"
-  }
-];
-
-// Initialiser le jeu futur avec les données en dur
-console.log('Initialisation du jeu futur avec les données:', games.futur.data);
+// Charger les données du futur depuis le fichier JSON
+fetch('futur.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(data => {
+    if (data && data.data && Array.isArray(data.data)) {
+      games.futur.data = data.data;
+      console.log('Données du futur chargées avec succès:', games.futur.data);
+    } else {
+      throw new Error('Format de données invalide dans futur.json');
+    }
+  })
+  .catch(error => {
+    console.error('Erreur lors du chargement du fichier futur.json:', error);
+    // Utiliser des données minimales en cas d'erreur
+    games.futur.data = [
+      { phrase: "Je chanterai une chanson", type: "er", correct: "chanterai" },
+      { phrase: "Tu finiras ton travail", type: "ir", correct: "finiras" }
+    ];
+    console.warn('Utilisation des données par défaut pour le jeu futur');
+  });
 
 // Ajouter les gestionnaires d'événements pour les boutons du futur
 document.addEventListener('DOMContentLoaded', function() {
