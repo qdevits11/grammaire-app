@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "phrase": "Je mange une pomme.",
+      "infinitif": "manger",
+      "temps": "présent"
+    },
+    {
+      "phrase": "J'ai mangé une pomme hier.",
+      "infinitif": "manger",
+      "temps": "passé"
+    },
+    {
+      "phrase": "Je mangerai une pomme demain.",
+      "infinitif": "manger",
+      "temps": "futur"
+    },
+    {
+      "phrase": "Les oiseaux chantent dans les arbres.",
+      "infinitif": "chanter",
+      "temps": "présent"
+    },
+    {
+      "phrase": "Les oiseaux ont chanté toute la matinée.",
+      "infinitif": "chanter",
+      "temps": "passé"
+    },
+    {
+      "phrase": "Les oiseaux chanteront au printemps prochain.",
+      "infinitif": "chanter",
+      "temps": "futur"
+    },
+    {
+      "phrase": "Elle lit un livre passionnant.",
+      "infinitif": "lire",
+      "temps": "présent"
+    },
+    {
+      "phrase": "Elle a lu ce livre la semaine dernière.",
+      "infinitif": "lire",
+      "temps": "passé"
+    },
+    {
+      "phrase": "Elle lira le prochain tome bientôt.",
+      "infinitif": "lire",
+      "temps": "futur"
+    },
+    {
+      "phrase": "Nous jouons au football.",
+      "infinitif": "jouer",
+      "temps": "présent"
+    },
+    {
+      "phrase": "Nous avons joué au football hier.",
+      "infinitif": "jouer",
+      "temps": "passé"
+    },
+    {
+      "phrase": "Nous jouerons au football demain.",
+      "infinitif": "jouer",
+      "temps": "futur"
+    }
+  ]
+}

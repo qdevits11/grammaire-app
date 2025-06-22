@@ -55,13 +55,18 @@
     
     if (answer === expectedAnswer) {
       console.log('Bonne réponse');
-      feedbackElement.textContent = '✅ Bonne réponse !';
+      feedbackElement.textContent = '✅ Bonne réponse ! +1 point';
       feedbackElement.style.color = 'green';
       gameData.totalPoints++;
     } else {
       console.log('Mauvaise réponse');
-      feedbackElement.textContent = `❌ Faux ! La bonne réponse était "${expectedAnswer}"`;
+      feedbackElement.textContent = `❌ Faux ! La bonne réponse était "${expectedAnswer}" -1 point`;
       feedbackElement.style.color = 'red';
+      
+      // Enlever un point (mais ne pas descendre en dessous de 0)
+      if (gameData.totalPoints > 0) {
+        gameData.totalPoints--;
+      }
       gameData.totalErreurs++;
       
       // Jouer un son d'erreur
@@ -71,6 +76,9 @@
         sound.play().catch(e => console.error('Erreur de lecture du son:', e));
       }
     }
+    
+    // Mettre à jour le tableau des scores
+    updateScoreboard(game);
     
     // Désactiver tous les boutons sauf suivant
     const buttons = document.querySelectorAll('.game-futur button');
@@ -129,6 +137,23 @@
     }
   }
 
+  // Fonction pour charger les données du jeu des temps
+  async function loadTempsData() {
+    console.log('Début du chargement de temps.json...');
+    try {
+      const response = await fetch('temps.json');
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
+      }
+      const data = await response.json();
+      console.log('Données du jeu des temps chargées avec succès');
+      return data.data || [];
+    } catch (error) {
+      console.error('Erreur lors du chargement des données des temps:', error);
+      return [];
+    }
+  }
+
   // Fonction pour initialiser les jeux
   async function initGames() {
     if (!window.games) {
@@ -149,14 +174,23 @@
           réponsesCorrectes: new Set(),
           totalPoints: 0,
           totalErreurs: 0
+        },
+        temps: {
+          data: [],
+          current: 0,
+          usedIndices: [],
+          réponsesCorrectes: new Set(),
+          totalPoints: 0,
+          totalErreurs: 0
         }
       };
       
-      // Charger les données des deux jeux en parallèle
+      // Charger les données des jeux en parallèle
       try {
-        const [rolesData, futurData] = await Promise.all([
+        const [rolesData, futurData, tempsData] = await Promise.all([
           loadRolesData(),
-          loadFuturData()
+          loadFuturData(),
+          loadTempsData()
         ]);
         
         // Mettre à jour les données des jeux
@@ -172,6 +206,13 @@
           console.log('Données du jeu futur chargées avec succès');
         } else {
           console.warn('Aucune donnée chargée pour le jeu futur');
+        }
+        
+        if (tempsData && tempsData.length > 0) {
+          window.games.temps.data = tempsData;
+          console.log('Données du jeu des temps chargées avec succès');
+        } else {
+          console.warn('Aucune donnée chargée pour le jeu des temps');
         }
         
       } catch (error) {
@@ -242,6 +283,11 @@
             <span>🔮 Futur simple</span>
           </a>
         </li>
+        <li>
+          <a href="#temps" onclick="selectGame('temps')">
+            <span>⏱️ Les temps</span>
+          </a>
+        </li>
       </ul>
     </nav>
   <main class="main-content">
@@ -278,6 +324,29 @@
           </div>
           <p id="futur-feedback"></p>
           <button id="nextFutur" onclick="nextPhrase('futur')" disabled>👉 Phrase suivante</button>
+        </div>
+      </div>
+      <div class="game-temps" style="display: none;">
+        <h1>Analyse du verbe</h1>
+        <div class="temps-content">
+          <div class="temps-phrase" id="temps-phrase">Chargement de la phrase...</div>
+          
+          <div class="input-group">
+            <label for="infinitif-input">Infinitif du verbe :</label>
+            <input type="text" id="infinitif-input" placeholder="Entrez l'infinitif du verbe">
+          </div>
+          
+          <div class="input-group">
+            <label>Temps du verbe :</label>
+            <div class="button-group">
+              <button onclick="selectAndCheckTemps('passé')">⏮️ Passé</button>
+              <button onclick="selectAndCheckTemps('présent')">⏯️ Présent</button>
+              <button onclick="selectAndCheckTemps('futur')">⏭️ Futur</button>
+            </div>
+          </div>
+          
+          <p id="temps-feedback"></p>
+          <button id="nextTemps" onclick="nextPhrase('temps')" class="next-btn" disabled>👉 Phrase suivante</button>
         </div>
       </div>
     </div>
@@ -456,11 +525,25 @@ function resetGame(game = currentGame) {
 }
 
 function updateScoreboard(game = currentGame) {
-  const gameData = games[game];
-  document.getElementById('points').textContent = gameData.totalPoints;
-  document.getElementById('errors').textContent = gameData.totalErreurs;
+  if (!window.games || !window.games[game]) {
+    console.error('Données du jeu non disponibles pour la mise à jour du score');
+    return;
+  }
+  
+  const gameData = window.games[game];
+  const pointsElement = document.getElementById('points');
+  const errorsElement = document.getElementById('errors');
+  const starsElement = document.getElementById('stars');
+  
+  if (pointsElement) pointsElement.textContent = gameData.totalPoints;
+  if (errorsElement) errorsElement.textContent = gameData.totalErreurs;
+  
+  // Ajouter une étoile par tranche de 10 points
   const starCount = Math.floor(Math.max(0, gameData.totalPoints) / 10);
-  document.getElementById('stars').textContent = '⭐'.repeat(starCount);
+  if (starsElement) {
+    starsElement.textContent = '⭐'.repeat(starCount);
+    console.log(`Mise à jour du score: ${gameData.totalPoints} points, ${starCount} étoiles`);
+  }
 }
 
 function renderPhrase(game = currentGame) {
@@ -539,6 +622,41 @@ function renderPhrase(game = currentGame) {
       feedbackElement.style.color = '';
     }
     document.getElementById('nextFutur').disabled = true;
+  }
+  // Gérer le jeu des temps
+  else if (game === 'temps') {
+    const container = document.getElementById('temps-phrase');
+    if (!container) {
+      console.error('Élément temps-phrase non trouvé');
+      return;
+    }
+    container.textContent = phraseObj.phrase || 'Phrase non disponible';
+    
+    const feedbackElement = document.getElementById('temps-feedback');
+    if (feedbackElement) {
+      feedbackElement.textContent = '';
+      feedbackElement.style.color = '';
+    }
+    
+    // Réactiver le champ de saisie et les boutons de réponse
+    const infinitifInput = document.getElementById('infinitif-input');
+    if (infinitifInput) {
+      infinitifInput.disabled = false;
+      infinitifInput.value = ''; // Réinitialiser la valeur
+    }
+    
+    // Réactiver les boutons de temps
+    document.querySelectorAll('.game-temps .button-group button').forEach(btn => {
+      btn.disabled = false;
+    });
+    
+    // Désélectionner le temps précédent
+    selectedTemps = null;
+    
+    // Les boutons de temps sont déjà désactivés par défaut
+    
+    const nextBtn = document.getElementById('nextTemps');
+    if (nextBtn) nextBtn.disabled = true;
   }
 }
 
@@ -632,6 +750,138 @@ function nextPhrase(game = currentGame) {
   }
 }
 
+// Variables pour stocker la sélection de l'utilisateur
+let selectedTemps = null;
+
+// Fonction pour sélectionner un temps
+function selectTemps(temps) {
+  selectedTemps = temps;
+  
+  // Mettre à jour le style des boutons
+  document.querySelectorAll('.game-temps .button-group button').forEach(btn => {
+    if (btn.textContent.includes(temps)) {
+      btn.style.backgroundColor = '#4CAF50';
+      btn.style.color = 'white';
+    } else {
+      btn.style.backgroundColor = '';
+      btn.style.color = '';
+    }
+  });
+  
+  return document.getElementById('infinitif-input') && document.getElementById('infinitif-input').value.trim() !== '';
+}
+
+// Fonction pour sélectionner un temps et valider immédiatement
+function selectAndCheckTemps(temps) {
+  const isInfinitifValid = selectTemps(temps);
+  
+  if (!isInfinitifValid) {
+    alert('Veuillez d\'abord entrer l\'infinitif du verbe');
+    return;
+  }
+  
+  checkTemps();
+}
+
+// Fonction pour vérifier la réponse dans le jeu des temps
+function checkTemps() {
+  const game = 'temps';
+  const infinitifInput = document.getElementById('infinitif-input');
+  const userInfinitif = infinitifInput ? infinitifInput.value.trim().toLowerCase() : '';
+  
+  if (!selectedTemps) {
+    alert('Veuillez sélectionner un temps');
+    return;
+  }
+  
+  if (!userInfinitif) {
+    alert('Veuillez entrer l\'infinitif du verbe');
+    return;
+  }
+  console.log('=== FONCTION checkTemps APPELÉE ===');
+  console.log('Temps choisi:', selectedTemps);
+  
+  if (!window.games) {
+    console.error('L\'objet games n\'est pas encore chargé');
+    return;
+  }
+  
+  // Désactiver les champs de saisie et les boutons
+  if (infinitifInput) infinitifInput.disabled = true;
+  document.querySelectorAll('.game-temps .button-group button').forEach(btn => {
+    btn.disabled = true;
+  });
+  
+  const gameData = window.games[game];
+  if (!gameData) {
+    console.error('Jeu non trouvé:', game, 'Disponibles:', Object.keys(window.games));
+    return;
+  }
+  
+  const currentData = gameData.data[gameData.current];
+  if (!currentData) {
+    console.error('Aucune donnée pour la phrase actuelle');
+    return;
+  }
+  
+  const feedbackElement = document.getElementById('temps-feedback');
+  const expectedAnswer = currentData.temps;
+  const expectedInfinitif = currentData.infinitif.toLowerCase();
+  
+  console.log('Réponse attendue:', {
+    temps: expectedAnswer,
+    infinitif: expectedInfinitif
+  }, 'Réponse donnée:', {
+    temps: selectedTemps,
+    infinitif: userInfinitif
+  });
+  
+  const tempsCorrect = selectedTemps === expectedAnswer;
+  const infinitifCorrect = userInfinitif === expectedInfinitif;
+  
+  if (tempsCorrect && infinitifCorrect) {
+    console.log('Bonne réponse pour le temps et l\'infinitif');
+    feedbackElement.innerHTML = `✅ Parfait ! ${expectedInfinitif} est bien au ${expectedAnswer}.<br>+1 point`;
+    feedbackElement.style.color = 'green';
+    gameData.totalPoints++;
+  } else if (tempsCorrect && !infinitifCorrect) {
+    console.log('Mauvaise réponse pour l\'infinitif');
+    feedbackElement.innerHTML = `❌ L'infinitif était ${expectedInfinitif} (le temps était correct).<br>-1 point`;
+    feedbackElement.style.color = 'red';
+    if (gameData.totalPoints > 0) gameData.totalPoints--;
+    gameData.totalErreurs++;
+  } else if (!tempsCorrect && infinitifCorrect) {
+    console.log('Mauvaise réponse pour le temps');
+    feedbackElement.innerHTML = `❌ Le temps était ${expectedAnswer} (l'infinitif était correct).<br>-1 point`;
+    feedbackElement.style.color = 'red';
+    if (gameData.totalPoints > 0) gameData.totalPoints--;
+    gameData.totalErreurs++;
+  } else {
+    console.log('Mauvaise réponse pour le temps et l\'infinitif');
+    feedbackElement.innerHTML = `❌ L'infinitif était ${expectedInfinitif} et le temps était ${expectedAnswer}.<br>-1 point`;
+    feedbackElement.style.color = 'red';
+    if (gameData.totalPoints > 0) gameData.totalPoints--;
+    gameData.totalErreurs++;
+    
+    // Jouer un son d'erreur
+    const errorSound = document.getElementById('error-sound');
+    if (errorSound) {
+      errorSound.play().catch(e => console.error('Erreur de lecture du son:', e));
+    }
+  }
+  
+  // Mettre à jour le tableau des scores
+  updateScoreboard(game);
+  
+  // Désactiver les boutons de réponse et activer le bouton suivant
+  document.querySelectorAll('.game-temps button:not(#nextTemps)').forEach(btn => {
+    btn.disabled = true;
+  });
+  
+  const nextBtn = document.getElementById('nextTemps');
+  if (nextBtn) nextBtn.disabled = false;
+}
+
 // Fonction pour gérer le changement de jeu
 function selectGame(game) {
   // Fermer le menu sur mobile/tablette
@@ -657,7 +907,11 @@ function selectGame(game) {
 
   // Afficher le jeu sélectionné
   const gameDiv = document.querySelector(`.game-${game}`);
-  gameDiv.style.display = 'block';
+  if (gameDiv) {
+    gameDiv.style.display = 'block';
+  } else {
+    console.error('Élément du jeu non trouvé:', `.game-${game}`);
+  }
 
   // Réinitialiser les scores
   resetGame(game);
