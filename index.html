@@ -67,37 +67,99 @@
   </main>
 
 <script>
-let phrases = [];
-let current = 0;
-let selected = null;
-let usedIndices = [];
-let réponsesCorrectes = new Set();
-let totalPoints = 0;
-let totalErreurs = 0;
+let currentGame = 'roles'; // Game par défaut
+let games = {
+  roles: {
+    data: [],
+    current: 0,
+    usedIndices: [],
+    réponsesCorrectes: new Set(),
+    totalPoints: 0,
+    totalErreurs: 0
+  },
+  conjugaison: {
+    data: [],
+    current: 0,
+    usedIndices: [],
+    réponsesCorrectes: new Set(),
+    totalPoints: 0,
+    totalErreurs: 0
+  },
+  accords: {
+    data: [],
+    current: 0,
+    usedIndices: [],
+    réponsesCorrectes: new Set(),
+    totalPoints: 0,
+    totalErreurs: 0
+  }
+};
 
-fetch('./data.json')
-  .then(response => response.json())
-  .then(data => {
-    phrases = data;
-    nextPhrase();
-  })
-  .catch(err => {
-    document.getElementById('phrase').textContent = "Erreur de chargement du fichier JSON";
-    console.error(err);
+// Charger les données pour chaque jeu
+Promise.all([
+  fetch('./data.json').then(response => response.json()),
+  fetch('./conjugaison.json').then(response => response.json()),
+  fetch('./accords.json').then(response => response.json())
+]).then(([rolesData, conjugaisonData, accordsData]) => {
+  games.roles.data = rolesData;
+  games.conjugaison.data = conjugaisonData;
+  games.accords.data = accordsData;
+  selectGame('roles'); // Charger le jeu par défaut
+}).catch(err => {
+  console.error('Erreur de chargement des données:', err);
+});
+
+function selectGame(game) {
+  // Mettre à jour le menu
+  document.querySelectorAll('.menu li').forEach(li => {
+    li.classList.remove('active');
+    if (li.children[0].href.includes(`#${game}`)) {
+      li.classList.add('active');
+    }
   });
 
-function renderPhrase() {
-  const phraseObj = phrases[current];
+  // Cacher tous les jeux
+  document.querySelectorAll('.game-content > div').forEach(div => {
+    div.style.display = 'none';
+  });
+
+  // Afficher le jeu sélectionné
+  const gameDiv = document.querySelector(`.game-${game}`);
+  gameDiv.style.display = 'block';
+
+  // Réinitialiser les scores
+  resetGame(game);
+}
+
+function resetGame(game = currentGame) {
+  games[game].totalPoints = 0;
+  games[game].totalErreurs = 0;
+  games[game].usedIndices = [];
+  updateScoreboard(game);
+  nextPhrase(game);
+}
+
+function updateScoreboard(game = currentGame) {
+  const gameData = games[game];
+  document.getElementById('points').textContent = gameData.totalPoints;
+  document.getElementById('errors').textContent = gameData.totalErreurs;
+  const starCount = Math.floor(Math.max(0, gameData.totalPoints) / 10);
+  document.getElementById('stars').textContent = '⭐'.repeat(starCount);
+}
+
+function renderPhrase(game = currentGame) {
+  const gameData = games[game];
+  const phraseObj = gameData.data[gameData.current];
   const phraseTexte = phraseObj.phrase;
   let html = phraseTexte;
   document.getElementById('feedback').textContent = '';
   document.getElementById('nextBtn').disabled = true;
-  réponsesCorrectes = new Set();
+  gameData.réponsesCorrectes = new Set();
   selected = null;
 
   // Remplace chaque groupe par un <span>
   phraseObj.groupes.forEach((g, index) => {
-    const escaped = g.texte.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const escaped = g.texte.replace(/[.*+?^${}()|\\]/g, '\\$&');
     const pattern = new RegExp(escaped, 'i'); // ignore la casse
     html = html.replace(
       pattern,
@@ -119,62 +181,57 @@ function renderPhrase() {
   });
 }
 
-function updateScoreboard() {
-  document.getElementById('points').textContent = totalPoints;
-  document.getElementById('errors').textContent = totalErreurs;
-  const starCount = Math.floor(Math.max(0, totalPoints) / 10);
-  document.getElementById('stars').textContent = '⭐'.repeat(starCount);
-}
-
-function checkAnswer(answer) {
+function checkAnswer(answer, game = currentGame) {
   if (!selected) {
     alert("Clique sur un groupe de mots.");
     return;
   }
 
+  const gameData = games[game];
   const role = selected.dataset.role;
   const idx = selected.dataset.index;
   selected.classList.remove('selected');
 
-  if (role === answer) {
-    selected.classList.add(role === 'sujet' ? 'bleu' : 'rouge');
-    réponsesCorrectes.add(idx);
-    totalPoints++;
-    updateScoreboard();
+  if (answer === role) {
+    selected.classList.add('bleu');
+    document.getElementById('feedback').textContent = '✅ Bonne réponse !';
+    gameData.réponsesCorrectes.add(idx);
+    gameData.totalPoints++;
   } else {
-    totalErreurs++;
-    totalPoints--;
-    document.getElementById('sound-bad').play();
-    updateScoreboard();
-    document.getElementById('feedback').textContent = `❌ Mauvaise réponse.`;
+    selected.classList.add('rouge');
+    document.getElementById('feedback').textContent = '❌ Mauvaise réponse !';
+    gameData.totalErreurs++;
+    const sound = document.getElementById('sound-bad');
+    sound.currentTime = 0;
+    sound.play();
+  }
+
+  updateScoreboard(game);
+  document.getElementById('nextBtn').disabled = gameData.réponsesCorrectes.size === gameData.data[gameData.current].groupes.length;
+}
+
+function nextPhrase(game = currentGame) {
+  const gameData = games[game];
+  if (gameData.usedIndices.length === gameData.data.length) {
+    // Réinitialiser les indices utilisés au lieu de réinitialiser tout le jeu
+    gameData.usedIndices = [];
+    gameData.current = 0;
+    renderPhrase(game);
     return;
   }
 
-  const total = phrases[current].groupes.length;
-  if (réponsesCorrectes.size === total) {
-    document.getElementById('feedback').textContent = `✅ Bravo ! Tu as tout trouvé.`;
-    document.getElementById('nextBtn').disabled = false;
-  }
-}
-
-function nextPhrase() {
-  if (usedIndices.length === phrases.length) usedIndices = [];
-
-  let index;
+  let newIndex;
   do {
-    index = Math.floor(Math.random() * phrases.length);
-  } while (usedIndices.includes(index));
+    newIndex = Math.floor(Math.random() * gameData.data.length);
+  } while (gameData.usedIndices.includes(newIndex));
 
-  usedIndices.push(index);
-  current = index;
-  renderPhrase();
+  gameData.usedIndices.push(newIndex);
+  gameData.current = newIndex;
+  renderPhrase(game);
 }
 
-function resetScores() {
-  totalPoints = 0;
-  totalErreurs = 0;
-  updateScoreboard();
-}
+// Fonction pour gérer le changement de jeu
+window.selectGame = selectGame;
 </script>
 </body>
 </html>
