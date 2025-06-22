@@ -383,6 +383,43 @@
         </div>
       </div>
 
+      <!-- Jeu de géométrie -->
+      <div class="game-geometrie" style="display: none;">
+        <h1>Formes géométriques</h1>
+        <div class="geometrie-container">
+          <div class="niveau-selection">
+            <h2>Choisis un niveau</h2>
+            <div class="niveaux-boutons">
+              <button class="niveau-btn" data-niveau="polygone-ou-non">Polygone ou non ?</button>
+              <button class="niveau-btn" data-niveau="type-polygone">Type de polygone</button>
+            </div>
+          </div>
+          
+          <div class="jeu-interface" style="display: none;">
+            <div class="niveau-description">
+              <h2 id="niveau-titre"></h2>
+              <p id="niveau-description"></p>
+            </div>
+            
+            <div id="forme-container">
+              <div id="forme-image"></div>
+              <div id="forme-options"></div>
+              <div class="boutons-actions">
+                <button id="btn-valider">Valider</button>
+                <button id="btn-suivant" style="display: none;">Suivant</button>
+                <button id="recommencer">Recommencer</button>
+              </div>
+            </div>
+            
+            <div id="resultats">
+              <h3>Résultats</h3>
+              <p>Score: <span id="score">0</span>/<span id="total">0</span></p>
+              <p id="feedback"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
       <!-- Jeu de conjugaison au futur -->
       <div class="game-conjugaison" style="display: none;">
         <h1>Conjugaison au futur</h1>
@@ -2148,50 +2185,134 @@ function verifierReponseDefinition() {
 
 // Initialisation du jeu de géométrie
 function initialiserJeuGeometrie() {
+  console.log('Initialisation du jeu de géométrie...');
+  
+  // Réinitialiser les variables du jeu
+  formesJouees = [];
+  
+  // Vérifier si les données sont déjà chargées
+  if (window.geometrieData) {
+    console.log('Données de géométrie déjà chargées');
+    configurerBoutonsNiveaux();
+    return;
+  }
+  
   // Charger les données de géométrie
-  chargerDonneesGeometrie().then(() => {
-    // Ajouter les écouteurs d'événements pour les boutons de niveau
-    document.querySelectorAll('.niveau-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const niveauId = btn.getAttribute('data-niveau');
-        demarrerNiveau(niveauId);
-      });
+  console.log('Chargement des données de géométrie...');
+  chargerDonneesGeometrie()
+    .then(() => {
+      console.log('Données de géométrie chargées avec succès');
+      configurerBoutonsNiveaux();
+    })
+    .catch(error => {
+      console.error('Erreur lors du chargement des données de géométrie:', error);
+      const container = document.querySelector('.game-geometrie');
+      if (container) {
+        container.innerHTML = '<p class="error">Erreur de chargement des données de géométrie. Veuillez recharger la page.</p>';
+      }
     });
-    
-    // Ajouter les écouteurs d'événements pour les boutons d'action
-    document.getElementById('btn-valider').addEventListener('click', validerReponse);
-    document.getElementById('btn-suivant').addEventListener('click', afficherFormeSuivante);
-    document.getElementById('recommencer').addEventListener('click', recommencerNiveau);
+}
+
+// Configurer les boutons de niveau
+function configurerBoutonsNiveaux() {
+  const boutonsNiveau = document.querySelectorAll('.niveau-btn');
+  if (boutonsNiveau.length === 0) {
+    console.error('Aucun bouton de niveau trouvé');
+    return;
+  }
+  
+  console.log('Configuration des boutons de niveau...');
+  
+  // Ajouter les écouteurs d'événements pour les boutons de niveau
+  boutonsNiveau.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const niveauId = e.currentTarget.getAttribute('data-niveau');
+      console.log('Niveau sélectionné:', niveauId);
+      demarrerNiveau(niveauId);
+    });
   });
+  
+  // Ajouter les écouteurs d'événements pour les boutons d'action
+  const btnValider = document.getElementById('btn-valider');
+  const btnSuivant = document.getElementById('btn-suivant');
+  const btnRecommencer = document.getElementById('recommencer');
+  
+  if (btnValider) {
+    btnValider.addEventListener('click', validerReponse);
+  } else {
+    console.error('Bouton valider non trouvé');
+  }
+  
+  if (btnSuivant) {
+    btnSuivant.addEventListener('click', afficherFormeSuivante);
+  } else {
+    console.error('Bouton suivant non trouvé');
+  }
+  
+  if (btnRecommencer) {
+    btnRecommencer.addEventListener('click', recommencerNiveau);
+  } else {
+    console.error('Bouton recommencer non trouvé');
+  }
+  
+  console.log('Boutons configurés avec succès');
 }
 
 // Démarrer un niveau spécifique
 function demarrerNiveau(niveauId) {
-  if (!window.geometrieData || !window.geometrieData.niveaux) {
+  console.log('Démarrage du niveau:', niveauId);
+  
+  // Vérifier que les données sont chargées
+  if (!window.geometrieData) {
     console.error('Données de géométrie non chargées');
+    // Essayer de recharger les données
+    initialiserJeuGeometrie();
     return;
   }
   
-  niveauActuel = JSON.parse(JSON.stringify(window.geometrieData.niveaux.find(n => n.id === niveauId)));
-  if (!niveauActuel) {
+  if (!window.geometrieData.niveaux) {
+    console.error('Aucun niveau trouvé dans les données de géométrie');
+    return;
+  }
+  
+  // Trouver le niveau demandé
+  const niveauTrouve = window.geometrieData.niveaux.find(n => n.id === niveauId);
+  if (!niveauTrouve) {
     console.error('Niveau non trouvé :', niveauId);
     return;
   }
   
+  // Créer une copie profonde du niveau
+  niveauActuel = JSON.parse(JSON.stringify(niveauTrouve));
+  
+  // Vérifier que le niveau a des formes
+  if (!niveauActuel.formes || niveauActuel.formes.length === 0) {
+    console.error('Aucune forme trouvée pour ce niveau');
+    return;
+  }
+  
   // Mélanger les formes pour ce niveau
-  niveauActuel.formes = melangerTableau(niveauActuel.formes);
+  niveauActuel.formes = melangerTableau([...niveauActuel.formes]);
   
   // Mettre à jour l'interface
-  document.getElementById('niveau-titre').textContent = niveauActuel.nom;
-  document.getElementById('niveau-description').textContent = niveauActuel.description;
-  document.getElementById('forme-container').style.display = 'block';
-  document.querySelector('.niveau-description').style.display = 'none';
-  document.getElementById('resultats').style.display = 'none';
+  const titreElement = document.getElementById('niveau-titre');
+  const descriptionElement = document.getElementById('niveau-description');
+  const formeContainer = document.getElementById('forme-container');
+  const descriptionContainer = document.querySelector('.niveau-description');
+  const resultatsElement = document.getElementById('resultats');
+  
+  if (titreElement) titreElement.textContent = niveauActuel.nom || 'Niveau sans nom';
+  if (descriptionElement) descriptionElement.textContent = niveauActuel.description || '';
+  if (formeContainer) formeContainer.style.display = 'block';
+  if (descriptionContainer) descriptionContainer.style.display = 'block';
+  if (resultatsElement) resultatsElement.style.display = 'none';
   
   // Réinitialiser les variables du jeu
   scoreGeometrie = 0;
   formesJouees = [];
   totalFormes = niveauActuel.formes.length;
+  
+  console.log(`Niveau "${niveauActuel.nom}" démarré avec ${totalFormes} formes`);
   
   // Afficher la première forme
   afficherFormeAleatoire();
@@ -2199,31 +2320,51 @@ function demarrerNiveau(niveauId) {
 
 // Afficher une forme aléatoire
 function afficherFormeAleatoire() {
+  console.log('Affichage d\'une forme aléatoire...');
+  
+  // Vérifier que le niveau est correctement initialisé
+  if (!niveauActuel || !niveauActuel.formes) {
+    console.error('Niveau non initialisé ou sans formes');
+    return;
+  }
+  
   // Réinitialiser l'interface
-  document.getElementById('feedback').style.display = 'none';
-  document.getElementById('btn-valider').disabled = true;
-  document.getElementById('btn-suivant').style.display = 'none';
-  document.getElementById('definition').style.display = 'none';
+  const feedbackElement = document.getElementById('feedback');
+  const btnValider = document.getElementById('btn-valider');
+  const btnSuivant = document.getElementById('btn-suivant');
+  const definitionElement = document.getElementById('definition');
+  
+  if (feedbackElement) feedbackElement.style.display = 'none';
+  if (btnValider) btnValider.disabled = true;
+  if (btnSuivant) btnSuivant.style.display = 'none';
+  if (definitionElement) definitionElement.style.display = 'none';
   
   // Choisir une forme aléatoire qui n'a pas encore été jouée
   const formesDisponibles = niveauActuel.formes.filter((_, index) => !formesJouees.includes(index));
   
   if (formesDisponibles.length === 0) {
-    // Toutes les formes ont été jouées
+    console.log('Toutes les formes ont été jouées');
     afficherResultats();
     return;
   }
   
   const formeIndex = Math.floor(Math.random() * formesDisponibles.length);
   formeActuelle = formesDisponibles[formeIndex];
-  formesJouees.push(niveauActuel.formes.indexOf(formeActuelle));
+  formesJouees.push(niveauActuel.formes.findIndex(f => f === formeActuelle));
+  
+  console.log('Forme sélectionnée:', formeActuelle);
   
   // Mettre à jour l'image de la forme
   const formeImage = document.getElementById('forme-image');
-  formeImage.innerHTML = `<img src="images/geometrie/${formeActuelle.image}" alt="${formeActuelle.type || 'Forme géométrique'}">`;
+  if (formeImage && formeActuelle.image) {
+    formeImage.innerHTML = `<img src="images/geometrie/${formeActuelle.image}" alt="${formeActuelle.type || 'Forme géométrique'}">`;
+  } else {
+    console.error('Impossible d\'afficher l\'image de la forme');
+    if (formeImage) formeImage.innerHTML = '<p>Image non disponible</p>';
+  }
   
   // Mettre à jour les boutons de réponse
-  const reponsesContainer = document.getElementById('reponse-boutons');
+  const reponsesContainer = document.getElementById('reponse-boutons') || document.createElement('div');
   reponsesContainer.innerHTML = '';
   
   // Déterminer les réponses possibles en fonction du niveau
@@ -2235,7 +2376,12 @@ function afficherFormeAleatoire() {
     reponses = ['Triangle', 'Quadrilatère'];
   } else if (niveauActuel.id === 'quadrilateres') {
     reponses = ['Trapèze', 'Parallélogramme', 'Rectangle', 'Carré'];
+  } else {
+    console.error('Type de niveau non reconnu:', niveauActuel.id);
+    reponses = [];
   }
+  
+  console.log('Réponses possibles:', reponses);
   
   // Créer les boutons de réponse
   reponses.forEach(reponse => {
@@ -2248,6 +2394,7 @@ function afficherFormeAleatoire() {
       // Sélectionner le bouton cliqué
       btn.classList.add('selected');
       reponseSelectionnee = reponse;
+      console.log('Réponse sélectionnée:', reponse);
       // Valider automatiquement la réponse
       validerReponse();
     });
@@ -2258,15 +2405,24 @@ function afficherFormeAleatoire() {
   reponseSelectionnee = null;
   
   // Cacher le bouton Valider puisqu'on valide automatiquement
-  document.getElementById('btn-valider').style.display = 'none';
+  if (btnValider) btnValider.style.display = 'none';
 }
 
 // Valider la réponse sélectionnée
 function validerReponse() {
-  // Vérifier s'il y a une réponse sélectionnée
-  if (reponseSelectionnee === null) return;
+  console.log('Validation de la réponse...');
   
-  const reponse = reponseSelectionnee;
+  // Vérifier s'il y a une réponse sélectionnée
+  if (reponseSelectionnee === null) {
+    console.warn('Aucune réponse sélectionnée');
+    return;
+  }
+  
+  // Vérifier que les éléments nécessaires sont présents
+  if (!niveauActuel || !formeActuelle) {
+    console.error('Données manquantes pour valider la réponse');
+    return;
+  }
   
   const feedback = document.getElementById('feedback');
   const feedbackTexte = document.getElementById('feedback-texte');
@@ -2274,132 +2430,207 @@ function validerReponse() {
   const definition = document.getElementById('definition');
   const definitionTexte = document.getElementById('definition-texte');
   
+  if (!feedback || !feedbackTexte || !explication || !definition || !definitionTexte) {
+    console.error('Éléments d\'interface manquants');
+    return;
+  }
+  
   // Vérifier si la réponse est correcte
   let estCorrect = false;
   let reponseAttendue = '';
   let explicationTexte = '';
   
-  if (niveauActuel.id === 'polygone-ou-non') {
-    reponseAttendue = formeActuelle.estPolygone ? 'Polygone' : 'Non-polygone';
-    estCorrect = reponseSelectionnee === reponseAttendue;
-    
-    if (estCorrect) {
-      if (formeActuelle.estPolygone) {
-        explicationTexte = 'Exact ! Cette forme est un polygone car elle est composée de segments droits qui se referment pour former une figure plane fermée.';
+  try {
+    if (niveauActuel.id === 'polygone-ou-non') {
+      reponseAttendue = formeActuelle.estPolygone ? 'Polygone' : 'Non-polygone';
+      estCorrect = reponseSelectionnee === reponseAttendue;
+      
+      if (estCorrect) {
+        if (formeActuelle.estPolygone) {
+          explicationTexte = 'Exact ! Cette forme est un polygone car elle est composée de segments droits qui se referment pour former une figure plane fermée.';
+        } else {
+          explicationTexte = 'Exact ! Cette forme n\'est pas un polygone car elle contient des courbes ou n\'est pas une figure fermée.';
+        }
       } else {
-        explicationTexte = 'Exact ! Cette forme n\'est pas un polygone car elle contient des courbes ou n\'est pas une figure fermée.';
+        if (formeActuelle.estPolygone) {
+          explicationTexte = `Non, cette forme est bien un polygone. Un polygone est une figure plane fermée composée de segments droits. ${formeActuelle.explication || ''}`;
+        } else {
+          explicationTexte = `Non, cette forme n'est pas un polygone. ${formeActuelle.explication || ''}`;
+        }
+      }
+      
+    } else if (niveauActuel.id === 'type-polygone') {
+      reponseAttendue = formeActuelle.type === 'triangle' ? 'Triangle' : 'Quadrilatère';
+      estCorrect = reponseSelectionnee === reponseAttendue;
+      
+      if (estCorrect) {
+        if (formeActuelle.type === 'triangle') {
+          explicationTexte = 'Exact ! Cette forme est un triangle car elle a 3 côtés.';
+        } else {
+          explicationTexte = 'Exact ! Cette forme est un quadrilatère car elle a 4 côtés.';
+        }
+      } else {
+        if (formeActuelle.type === 'triangle') {
+          explicationTexte = `Non, cette forme est un triangle car elle a 3 côtés. Un triangle est un polygone à trois côtés.`;
+        } else {
+          explicationTexte = `Non, cette forme est un quadrilatère car elle a 4 côtés. Un quadrilatère est un polygone à quatre côtés.`;
+        }
+      }
+      
+    } else if (niveauActuel.id === 'quadrilateres') {
+      reponseAttendue = formeActuelle.type && typeof formeActuelle.type === 'string' 
+        ? formeActuelle.type.charAt(0).toUpperCase() + formeActuelle.type.slice(1)
+        : 'Inconnu';
+        
+      estCorrect = reponseSelectionnee === reponseAttendue;
+      
+      if (estCorrect) {
+        switch(formeActuelle.type) {
+          case 'trapeze':
+            explicationTexte = 'Exact ! C\'est un trapèze car il a au moins une paire de côtés parallèles.';
+            break;
+          case 'parallelogramme':
+            explicationTexte = 'Exact ! C\'est un parallélogramme car ses côtés opposés sont parallèles et de même longueur.';
+            break;
+          case 'rectangle':
+            explicationTexte = 'Exact ! C\'est un rectangle car il a quatre angles droits et des côtés opposés parallèles et de même longueur.';
+            break;
+          case 'carre':
+            explicationTexte = 'Exact ! C\'est un carré car il a quatre côtés de même longueur et quatre angles droits.';
+            break;
+          case 'losange':
+            explicationTexte = 'Exact ! C\'est un losange car il a quatre côtés de même longueur et des côtés opposés parallèles.';
+            break;
+          default:
+            explicationTexte = 'Bonne réponse !';
+            console.warn('Type de quadrilatère non reconnu:', formeActuelle.type);
+        }
+      } else {
+        switch(formeActuelle.type) {
+          case 'trapeze':
+            explicationTexte = `Non, c'est un trapèze. Un trapèze est un quadrilatère qui a au moins une paire de côtés parallèles.`;
+            break;
+          case 'parallelogramme':
+            explicationTexte = `Non, c'est un parallélogramme. Un parallélogramme a ses côtés opposés parallèles et de même longueur.`;
+            break;
+          case 'rectangle':
+            explicationTexte = `Non, c'est un rectangle. Un rectangle a quatre angles droits et des côtés opposés parallèles et de même longueur.`;
+            break;
+          case 'carre':
+            explicationTexte = `Non, c'est un carré. Un carré a quatre côtés de même longueur et quatre angles droits.`;
+            break;
+          case 'losange':
+            explicationTexte = `Non, c'est un losange. Un losange a quatre côtés de même longueur et des côtés opposés parallèles.`;
+            break;
+          default:
+            explicationTexte = `La bonne réponse était : ${reponseAttendue}`;
+            console.warn('Type de quadrilatère non reconnu:', formeActuelle.type);
+        }
       }
     } else {
-      if (formeActuelle.estPolygone) {
-        explicationTexte = `Non, cette forme est bien un polygone. Un polygone est une figure plane fermée composée de segments droits. ${formeActuelle.explication}`;
-      } else {
-        explicationTexte = `Non, cette forme n'est pas un polygone. ${formeActuelle.explication}`;
-      }
+      console.error('Type de niveau non pris en charge:', niveauActuel.id);
+      return;
     }
     
-  } else if (niveauActuel.id === 'type-polygone') {
-    reponseAttendue = formeActuelle.type === 'triangle' ? 'Triangle' : 'Quadrilatère';
-    estCorrect = reponseSelectionnee === reponseAttendue;
-    
+    // Mettre à jour le score et afficher le feedback
     if (estCorrect) {
-      if (formeActuelle.type === 'triangle') {
-        explicationTexte = 'Exact ! Cette forme est un triangle car elle a 3 côtés.';
-      } else {
-        explicationTexte = 'Exact ! Cette forme est un quadrilatère car elle a 4 côtés.';
-      }
+      scoreGeometrie++;
+      console.log('Bonne réponse ! Score:', scoreGeometrie);
     } else {
-      if (formeActuelle.type === 'triangle') {
-        explicationTexte = `Non, cette forme est un triangle car elle a 3 côtés. Un triangle est un polygone à trois côtés.`;
-      } else {
-        explicationTexte = `Non, cette forme est un quadrilatère car elle a 4 côtés. Un quadrilatère est un polygone à quatre côtés.`;
-      }
+      console.log('Mauvaise réponse. La bonne réponse était:', reponseAttendue);
     }
     
-  } else if (niveauActuel.id === 'quadrilateres') {
-    reponseAttendue = formeActuelle.type.charAt(0).toUpperCase() + formeActuelle.type.slice(1);
-    estCorrect = reponseSelectionnee === reponseAttendue;
+    // Mettre à jour l'interface utilisateur
+    feedback.className = estCorrect ? 'feedback correct' : 'feedback incorrect';
+    feedbackTexte.textContent = estCorrect ? 'Bonne réponse !' : `La bonne réponse était : ${reponseAttendue}`;
+    explication.textContent = explicationTexte;
     
-    if (estCorrect) {
-      switch(formeActuelle.type) {
-        case 'trapeze':
-          explicationTexte = 'Exact ! C\'est un trapèze car il a au moins une paire de côtés parallèles.';
-          break;
-        case 'parallelogramme':
-          explicationTexte = 'Exact ! C\'est un parallélogramme car ses côtés opposés sont parallèles et de même longueur.';
-          break;
-        case 'rectangle':
-          explicationTexte = 'Exact ! C\'est un rectangle car il a quatre angles droits et des côtés opposés parallèles et de même longueur.';
-          break;
-        case 'carre':
-          explicationTexte = 'Exact ! C\'est un carré car il a quatre côtés de même longueur et quatre angles droits.';
-          break;
-        case 'losange':
-          explicationTexte = 'Exact ! C\'est un losange car il a quatre côtés de même longueur et des côtés opposés parallèles.';
-          break;
-      }
+    // Afficher la définition si disponible
+    if (window.geometrieData && 
+        window.geometrieData.definitions && 
+        formeActuelle.type && 
+        window.geometrieData.definitions[formeActuelle.type]) {
+      definitionTexte.textContent = window.geometrieData.definitions[formeActuelle.type];
+      definition.style.display = 'block';
     } else {
-      switch(formeActuelle.type) {
-        case 'trapeze':
-          explicationTexte = `Non, c'est un trapèze. Un trapèze est un quadrilatère qui a au moins une paire de côtés parallèles.`;
-          break;
-        case 'parallelogramme':
-          explicationTexte = `Non, c'est un parallélogramme. Un parallélogramme a ses côtés opposés parallèles et de même longueur.`;
-          break;
-        case 'rectangle':
-          explicationTexte = `Non, c'est un rectangle. Un rectangle a quatre angles droits et des côtés opposés parallèles et de même longueur.`;
-          break;
-        case 'carre':
-          explicationTexte = `Non, c'est un carré. Un carré a quatre côtés de même longueur et quatre angles droits.`;
-          break;
-        case 'losange':
-          explicationTexte = `Non, c'est un losange. Un losange a quatre côtés de même longueur et des côtés opposés parallèles.`;
-          break;
-      }
+      definition.style.display = 'none';
+    }
+    
+    // Afficher le feedback
+    feedback.style.display = 'block';
+    
+    // Désactiver tous les boutons de réponse et mettre en évidence la bonne réponse
+    const boutonsReponse = document.querySelectorAll('.reponse-btn');
+    if (boutonsReponse.length > 0) {
+      boutonsReponse.forEach(btn => {
+        btn.disabled = true;
+        
+        // Mettre en évidence la bonne réponse
+        const estBonneReponse = (niveauActuel.id === 'polygone-ou-non' && btn.textContent === reponseAttendue) ||
+                              ((niveauActuel.id === 'type-polygone' || niveauActuel.id === 'quadrilateres') && 
+                               btn.textContent.toLowerCase() === formeActuelle.type);
+        
+        if (estBonneReponse) {
+          btn.classList.add('correct-answer');
+        }
+      });
+    }
+    
+    // Mettre à jour les boutons d'action
+    const btnValider = document.getElementById('btn-valider');
+    const btnSuivant = document.getElementById('btn-suivant');
+    
+    if (btnValider) btnValider.style.display = 'none';
+    if (btnSuivant) btnSuivant.style.display = 'inline-block';
+    
+  } catch (error) {
+    console.error('Erreur lors de la validation de la réponse:', error);
+    if (feedback && feedbackTexte) {
+      feedback.className = 'feedback error';
+      feedbackTexte.textContent = 'Une erreur est survenue. Veuillez réessayer.';
+      feedback.style.display = 'block';
     }
   }
-  
-  // Mettre à jour le score et afficher le feedback
-  if (estCorrect) {
-    scoreGeometrie++;
-    feedback.className = 'feedback correct';
-    feedbackTexte.textContent = 'Bonne réponse !';
-  } else {
-    feedback.className = 'feedback incorrect';
-    feedbackTexte.textContent = `La bonne réponse était : ${reponseAttendue}`;
-  }
-  
-  // Afficher l'explication détaillée
-  explication.textContent = explicationTexte;
-  
-  // Afficher la définition si disponible
-  if (geometrieData.definitions[formeActuelle.type]) {
-    definitionTexte.textContent = geometrieData.definitions[formeActuelle.type];
-    definition.style.display = 'block';
-  }
-  
-  // Afficher le feedback
-  feedback.style.display = 'block';
-  
-  // Désactiver tous les boutons de réponse
-  document.querySelectorAll('.reponse-btn').forEach(btn => {
-    btn.disabled = true;
-    // Mettre en évidence la bonne réponse
-    if (niveauActuel.id === 'polygone-ou-non' && btn.textContent === reponseAttendue) {
-      btn.classList.add('correct-answer');
-    } else if ((niveauActuel.id === 'type-polygone' || niveauActuel.id === 'quadrilateres') && 
-               btn.textContent.toLowerCase() === formeActuelle.type) {
-      btn.classList.add('correct-answer');
-    }
-  });
-  
-  // Afficher le bouton suivant
-  document.getElementById('btn-valider').style.display = 'none';
-  document.getElementById('btn-suivant').style.display = 'inline-block';
 }
 
 // Afficher la forme suivante
 function afficherFormeSuivante() {
-  afficherFormeAleatoire();
+  console.log('Passage à la forme suivante...');
+  
+  try {
+    // Vérifier qu'il reste des formes à afficher
+    if (formesJouees.length >= totalFormes) {
+      console.log('Toutes les formes ont été jouées, affichage des résultats');
+      afficherResultats();
+      return;
+    }
+    
+    // Réinitialiser la sélection de réponse
+    reponseSelectionnee = null;
+    
+    // Afficher une nouvelle forme
+    afficherFormeAleatoire();
+    
+  } catch (error) {
+    console.error('Erreur lors du passage à la forme suivante:', error);
+    
+    // Afficher un message d'erreur à l'utilisateur
+    const feedback = document.getElementById('feedback');
+    const feedbackTexte = document.getElementById('feedback-texte');
+    
+    if (feedback && feedbackTexte) {
+      feedback.className = 'feedback error';
+      feedbackTexte.textContent = 'Une erreur est survenue lors du chargement de la prochaine forme.';
+      feedback.style.display = 'block';
+    }
+    
+    // Essayer d'afficher les résultats en cas d'erreur
+    try {
+      afficherResultats();
+    } catch (e) {
+      console.error('Impossible d\'afficher les résultats:', e);
+    }
+  }
 }
 
 

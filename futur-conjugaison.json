@@ -1,20 +1,6 @@
 {
   "verbes": [
     {
-      "infinitif": "parler",
-      "conjugaisons": {
-        "je": "parlerai",
-        "tu": "parleras",
-        "il": "parlera",
-        "elle": "parlera",
-        "on": "parlera",
-        "nous": "parlerons",
-        "vous": "parlerez",
-        "ils": "parleront",
-        "elles": "parleront"
-      }
-    },
-    {
       "infinitif": "finir",
       "conjugaisons": {
         "je": "finirai",
