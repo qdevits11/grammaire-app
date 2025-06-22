@@ -7,26 +7,64 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="top-bar">
-    <div id="scoreboard">
-      Points : <span id="points">0</span> | Erreurs : <span id="errors">0</span>
-      <div class="stars" id="stars"></div>
+  <nav class="sidebar">
+    <div class="logo">
+      <h2>Révision Grammaire</h2>
     </div>
-    <button onclick="resetScores()">🔄 Réinitialiser</button>
-  </div>
+    <ul class="menu">
+      <li class="active">
+        <a href="#roles" onclick="selectGame('roles')">
+          <span>🔍 Rôles des groupes</span>
+        </a>
+      </li>
+      <li>
+        <a href="#conjugaison" onclick="selectGame('conjugaison')">
+          <span>📝 Conjugaison</span>
+        </a>
+      </li>
+      <li>
+        <a href="#accords" onclick="selectGame('accords')">
+          <span>🔄 Accords</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
 
-  <div style="margin-top: 7vh;"></div>
-  <h1>Quel est le rôle de chaque groupe ?</h1>
-  <div class="phrase" id="phrase">Chargement de la phrase...</div>
-  <div>
-    <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
-    <button onclick="checkAnswer('verbe')">🔴 Verbe</button>
-    <button onclick="checkAnswer('cdv')">🔴 GCDV</button>
-    <button onclick="checkAnswer('civ')">🔴 GCIV</button>
-  </div>
-  <p id="feedback"></p>
-  <button id="nextBtn" onclick="nextPhrase()" disabled>👉 Phrase suivante</button>
-  <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+  <main class="main-content">
+    <div class="top-bar">
+      <div id="scoreboard">
+        Points : <span id="points">0</span> | Erreurs : <span id="errors">0</span>
+        <div class="stars" id="stars"></div>
+      </div>
+      <button onclick="resetScores()">🔄 Réinitialiser</button>
+    </div>
+
+    <div class="game-content">
+      <div class="game-roles">
+        <h1>Quel est le rôle de chaque groupe ?</h1>
+        <div class="phrase" id="phrase">Chargement de la phrase...</div>
+        <div>
+          <button onclick="checkAnswer('sujet')">🔵 Sujet</button>
+          <button onclick="checkAnswer('verbe')">🔴 Verbe</button>
+          <button onclick="checkAnswer('cdv')">🔴 GCDV</button>
+          <button onclick="checkAnswer('civ')">🔴 GCIV</button>
+        </div>
+        <p id="feedback"></p>
+        <button id="nextBtn" onclick="nextPhrase()" disabled>👉 Phrase suivante</button>
+      </div>
+
+      <div class="game-conjugaison" style="display: none;">
+        <h1>Conjugaison</h1>
+        <p>Contenu du jeu de conjugaison à venir...</p>
+      </div>
+
+      <div class="game-accords" style="display: none;">
+        <h1>Accords</h1>
+        <p>Contenu du jeu d'accords à venir...</p>
+      </div>
+    </div>
+    <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
+  </main>
 
 <script>
 let phrases = [];
