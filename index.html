@@ -423,6 +423,9 @@
       <!-- Jeu de conjugaison au futur -->
       <div class="game-conjugaison" style="display: none;">
         <h1>Conjugaison au futur</h1>
+        <div class="score-conjugaison">
+          Score: <span id="score-conjugaison">0</span> / <span id="total-verbes">0</span>
+        </div>
         <div class="conjugaison-content">
           <div class="conjugaison-header">
             <div class="conjugaison-verbe" id="conjugaison-verbe">Conjuguez le verbe : <span id="verbe-infinitif">chargement...</span></div>
@@ -1168,6 +1171,11 @@ function selectGame(game) {
   const gameDiv = document.querySelector(`.game-${game}`);
   if (gameDiv) {
     gameDiv.style.display = 'block';
+    
+    // Initialiser le jeu de conjugaison si c'est le jeu sélectionné
+    if (game === 'conjugaison') {
+      initConjugaison();
+    }
   } else {
     console.error('Élément du jeu non trouvé:', `.game-${game}`);
   }
@@ -1943,69 +1951,182 @@ function afficherVerbeActuel() {
   }
   
   const verbe = verbesData[currentVerbeIndex];
-  document.getElementById('verbe-infinitif').textContent = verbe.infinitif;
+  if (!verbe || !verbe.infinitif) {
+    console.error('Données de verbe invalides:', verbe);
+    return;
+  }
+  
+  // Mettre à jour l'infinitif du verbe
+  const verbeInfinitifElement = document.getElementById('verbe-infinitif');
+  if (verbeInfinitifElement) {
+    verbeInfinitifElement.textContent = verbe.infinitif;
+  }
   
   // Réinitialiser les champs de saisie et les retours visuels
-  ['je', 'tu', 'il', 'nous', 'vous', 'ils'].forEach(personne => {
-    document.getElementById(`conj-${personne}`).value = '';
-    document.getElementById(`result-${personne}`).textContent = '';
-    document.getElementById(`result-${personne}`).className = 'conjugaison-result';
+  const personnes = ['je', 'tu', 'il', 'nous', 'vous', 'ils'];
+  personnes.forEach(personne => {
+    const inputElement = document.getElementById(`conj-${personne}`);
+    const resultElement = document.getElementById(`result-${personne}`);
+    
+    if (inputElement) {
+      inputElement.value = '';
+      inputElement.disabled = false;
+    }
+    
+    if (resultElement) {
+      resultElement.textContent = '';
+      resultElement.className = 'conjugaison-result';
+    }
   });
   
-  // Activer tous les champs de saisie
-  document.querySelectorAll('.conjugaison-input').forEach(input => {
-    input.disabled = false;
-  });
+  // Désactiver le bouton suivant
+  const nextButton = document.getElementById('next-conjugaison');
+  if (nextButton) {
+    nextButton.disabled = true;
+  }
   
   // Réinitialiser le feedback
-  document.getElementById('conjugaison-feedback').textContent = '';
-  document.getElementById('conjugaison-feedback').className = 'conjugaison-feedback';
+  const feedbackElement = document.getElementById('conjugaison-feedback');
+  if (feedbackElement) {
+    feedbackElement.textContent = '';
+    feedbackElement.className = 'conjugaison-feedback';
+  }
   
   // Mettre à jour le compteur
-  document.getElementById('verbe-compteur').textContent = `${currentVerbeIndex + 1} / ${totalVerbes}`;
+  const compteurElement = document.getElementById('verbe-compteur');
+  if (compteurElement) {
+    compteurElement.textContent = `${currentVerbeIndex + 1} / ${totalVerbes}`;
+  }
 }
 
 // Initialiser le jeu de conjugaison
 function initConjugaison() {
+  console.log('Initialisation du jeu de conjugaison...');
+  
+  // Réinitialiser les variables du jeu
+  scoreConjugaison = 0;
+  totalVerbes = 0;
+  currentVerbeIndex = 0;
+  verbesData = [];
+  
+  // Mettre à jour l'interface utilisateur
+  const scoreElement = document.getElementById('score-conjugaison');
+  const totalElement = document.getElementById('total-verbes');
+  const feedbackElement = document.getElementById('conjugaison-feedback');
+  
+  if (scoreElement) scoreElement.textContent = '0';
+  if (totalElement) totalElement.textContent = '0';
+  if (feedbackElement) {
+    feedbackElement.textContent = 'Chargement des verbes...';
+    feedbackElement.className = 'conjugaison-feedback';
+  }
+  
+  // Charger les données des verbes
   fetch('futur-conjugaison.json')
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Erreur HTTP: ${response.status}`);
+      }
+      return response.json();
+    })
     .then(data => {
+      console.log('Données des verbes chargées avec succès:', data);
+      
+      if (!data || !data.verbes || !Array.isArray(data.verbes)) {
+        throw new Error('Format de données invalide dans futur-conjugaison.json');
+      }
+      
       verbesData = data.verbes;
       totalVerbes = verbesData.length;
       currentVerbeIndex = 0;
+      
+      console.log(`Chargement de ${totalVerbes} verbes`);
+      
+      // Mettre à jour l'interface utilisateur
+      if (totalElement) totalElement.textContent = totalVerbes;
+      if (feedbackElement) feedbackElement.textContent = '';
+      
+      // Afficher le premier verbe
       afficherVerbeActuel();
-      document.getElementById('score-conjugaison').textContent = scoreConjugaison;
-      document.getElementById('total-verbes').textContent = totalVerbes;
       
-      // Ajouter l'écouteur pour le bouton de vérification
-      document.getElementById('check-conjugaison').addEventListener('click', verifierConjugaison);
+      // Ajouter les écouteurs d'événements s'ils n'existent pas déjà
+      const checkButton = document.getElementById('check-conjugaison');
+      const nextButton = document.getElementById('next-conjugaison');
       
-      // Ajouter l'écouteur pour le bouton suivant
-      document.getElementById('next-conjugaison').addEventListener('click', () => {
-        currentVerbeIndex = (currentVerbeIndex + 1) % verbesData.length;
-        afficherVerbeActuel();
-      });
+      if (checkButton) {
+        checkButton.onclick = verifierConjugaison;
+      }
+      
+      if (nextButton) {
+        nextButton.onclick = () => {
+          currentVerbeIndex = (currentVerbeIndex + 1) % verbesData.length;
+          afficherVerbeActuel();
+        };
+      }
+      
+      console.log('Jeu de conjugaison initialisé avec succès');
     })
     .catch(error => {
       console.error('Erreur lors du chargement des verbes :', error);
-      document.getElementById('conjugaison-feedback').innerHTML = 'Erreur lors du chargement des verbes. Veuillez réessayer.';
+      const errorMessage = `Erreur lors du chargement des verbes : ${error.message}`;
+      
+      if (feedbackElement) {
+        feedbackElement.textContent = errorMessage;
+        feedbackElement.className = 'conjugaison-feedback error';
+      }
+      
+      // Afficher un message d'erreur plus visible
+      const errorDiv = document.createElement('div');
+      errorDiv.className = 'error-message';
+      errorDiv.style.color = 'red';
+      errorDiv.style.padding = '10px';
+      errorDiv.style.margin = '10px 0';
+      errorDiv.style.border = '1px solid red';
+      errorDiv.style.borderRadius = '5px';
+      errorDiv.textContent = errorMessage;
+      
+      const gameContainer = document.querySelector('.game-conjugaison');
+      if (gameContainer) {
+        gameContainer.insertBefore(errorDiv, gameContainer.firstChild);
+      }
     });
 }
 
 // Vérifier les réponses de conjugaison
 function verifierConjugaison() {
-  if (!verbesData || currentVerbeIndex >= verbesData.length) return;
+  if (!verbesData || currentVerbeIndex >= verbesData.length) {
+    console.error('Aucune donnée de verbe disponible ou index invalide');
+    return;
+  }
   
   const verbe = verbesData[currentVerbeIndex];
+  if (!verbe || !verbe.conjugaisons) {
+    console.error('Données de verbe invalides:', verbe);
+    return;
+  }
+  
   let toutesCorrectes = true;
+  const personnes = ['je', 'tu', 'il', 'nous', 'vous', 'ils'];
   
   // Vérifier chaque personne
-  ['je', 'tu', 'il', 'nous', 'vous', 'ils'].forEach(personne => {
-    const reponse = document.getElementById(`conj-${personne}`).value.trim().toLowerCase();
-    const reponseCorrecte = verbe[`${personne}_futur`].toLowerCase();
+  personnes.forEach(personne => {
+    const inputElement = document.getElementById(`conj-${personne}`);
     const resultElement = document.getElementById(`result-${personne}`);
     
-    if (reponse === reponseCorrecte) {
+    if (!inputElement || !resultElement) {
+      console.error(`Élément non trouvé pour la personne: ${personne}`);
+      return;
+    }
+    
+    const reponse = inputElement.value.trim().toLowerCase();
+    const reponseCorrecte = verbe.conjugaisons[personne];
+    
+    if (!reponseCorrecte) {
+      console.error(`Aucune conjugaison trouvée pour la personne: ${personne}`, verbe);
+      return;
+    }
+    
+    if (reponse === reponseCorrecte.toLowerCase()) {
       resultElement.textContent = '✓';
       resultElement.className = 'conjugaison-result correct';
     } else {
@@ -2015,15 +2136,16 @@ function verifierConjugaison() {
     }
   });
   
-  // Mettre à jour le score
+  // Mettre à jour le feedback
+  const feedbackElement = document.getElementById('conjugaison-feedback');
   if (toutesCorrectes) {
     scoreConjugaison++;
     document.getElementById('score-conjugaison').textContent = scoreConjugaison;
-    document.getElementById('conjugaison-feedback').textContent = 'Bravo ! Toutes les réponses sont correctes !';
-    document.getElementById('conjugaison-feedback').className = 'conjugaison-feedback success';
+    feedbackElement.textContent = 'Bravo ! Toutes les réponses sont correctes !';
+    feedbackElement.className = 'conjugaison-feedback success';
   } else {
-    document.getElementById('conjugaison-feedback').textContent = 'Certaines réponses sont incorrectes. Corrigez-les et réessayez.';
-    document.getElementById('conjugaison-feedback').className = 'conjugaison-feedback error';
+    feedbackElement.textContent = 'Certaines réponses sont incorrectes. Corrigez-les et réessayez.';
+    feedbackElement.className = 'conjugaison-feedback error';
   }
   
   // Activer le bouton suivant
