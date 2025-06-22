@@ -1,0 +1,112 @@
+[
+  {
+    "phrase": "Les enfants jouent dans le parc.",
+    "accords": [
+      {
+        "type": "verbe",
+        "explication": "Verbe au pluriel car le sujet est au pluriel (Les enfants)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Le chat noir dort sur le canapé.",
+    "accords": [
+      {
+        "type": "adjectif",
+        "explication": "Adjectif au masculin singulier car le nom est au masculin singulier (Le chat)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Les pommes rouges sont sur la table.",
+    "accords": [
+      {
+        "type": "adjectif",
+        "explication": "Adjectif au féminin pluriel car le nom est au féminin pluriel (Les pommes)",
+        "correct": true
+      },
+      {
+        "type": "verbe",
+        "explication": "Verbe au pluriel car le sujet est au pluriel (Les pommes)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "La fille aux cheveux blonds est fatiguée.",
+    "accords": [
+      {
+        "type": "adjectif",
+        "explication": "Adjectif au masculin pluriel car il s'agit d'un adjectif de couleur (blonds)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Les amis de Marie sont partis en vacances.",
+    "accords": [
+      {
+        "type": "verbe",
+        "explication": "Verbe au pluriel car le sujet est au pluriel (Les amis)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Le livre que j'ai lu était intéressant.",
+    "accords": [
+      {
+        "type": "verbe",
+        "explication": "Verbe au singulier car le sujet est au singulier (Le livre)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Les enfants qui jouent dans le jardin sont joyeux.",
+    "accords": [
+      {
+        "type": "verbe",
+        "explication": "Verbe au pluriel car le sujet est au pluriel (Les enfants)",
+        "correct": true
+      },
+      {
+        "type": "adjectif",
+        "explication": "Adjectif au masculin pluriel car le nom est au masculin pluriel (Les enfants)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Les lettres écrites par Marie sont arrivées hier.",
+    "accords": [
+      {
+        "type": "verbe",
+        "explication": "Verbe au pluriel car le sujet est au pluriel (Les lettres)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Le chien de Marie est noir.",
+    "accords": [
+      {
+        "type": "adjectif",
+        "explication": "Adjectif au masculin singulier car le nom est au masculin singulier (Le chien)",
+        "correct": true
+      }
+    ]
+  },
+  {
+    "phrase": "Les filles de la classe sont intelligentes.",
+    "accords": [
+      {
+        "type": "adjectif",
+        "explication": "Adjectif au féminin pluriel car le nom est au féminin pluriel (Les filles)",
+        "correct": true
+      }
+    ]
+  }
+]

@@ -55,12 +55,45 @@
 
       <div class="game-conjugaison" style="display: none;">
         <h1>Conjugaison</h1>
-        <p>Contenu du jeu de conjugaison à venir...</p>
+        <div class="conjugaison-content">
+          <div class="conjugaison-info">
+            <span class="verbe">Verbe : <span id="verbe">-</span></span>
+            <span class="temps">Temps : <span id="temps">-</span></span>
+            <span class="personne">Personne : <span id="personne">-</span></span>
+          </div>
+          <div class="conjugaison-input">
+            <input type="text" id="conjugaison-input" placeholder="Conjuguez le verbe...">
+            <button onclick="checkConjugaison()">Vérifier</button>
+          </div>
+          <div id="conjugaison-feedback"></div>
+          <button id="nextConjugaison" onclick="nextConjugaison()" disabled>Phrase suivante</button>
+        </div>
       </div>
 
       <div class="game-accords" style="display: none;">
         <h1>Accords</h1>
-        <p>Contenu du jeu d'accords à venir...</p>
+        <div class="accords-content">
+          <div class="accords-phrase" id="accords-phrase">-</div>
+          <div class="accords-questions">
+            <div class="question">
+              <label>Le verbe est-il correctement conjugué ?</label>
+              <div class="options">
+                <label><input type="radio" name="verbe" value="oui"> Oui</label>
+                <label><input type="radio" name="verbe" value="non"> Non</label>
+              </div>
+            </div>
+            <div class="question">
+              <label>Les adjectifs sont-ils correctement accordés ?</label>
+              <div class="options">
+                <label><input type="radio" name="adjectif" value="oui"> Oui</label>
+                <label><input type="radio" name="adjectif" value="non"> Non</label>
+              </div>
+            </div>
+          </div>
+          <div id="accords-feedback"></div>
+          <button id="checkAccords" onclick="checkAccords()" disabled>Vérifier</button>
+          <button id="nextAccords" onclick="nextAccords()" disabled>Phrase suivante</button>
+        </div>
       </div>
     </div>
     <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
@@ -98,15 +131,21 @@ let games = {
 // Charger les données pour chaque jeu
 Promise.all([
   fetch('./data.json').then(response => response.json()),
-  fetch('./conjugaison.json').then(response => response.json()),
-  fetch('./accords.json').then(response => response.json())
+  fetch('./conjugaison.json').then(response => response.json()).catch(() => []),
+  fetch('./accords.json').then(response => response.json()).catch(() => [])
 ]).then(([rolesData, conjugaisonData, accordsData]) => {
-  games.roles.data = rolesData;
-  games.conjugaison.data = conjugaisonData;
-  games.accords.data = accordsData;
-  selectGame('roles'); // Charger le jeu par défaut
+  if (rolesData && rolesData.length > 0) {
+    games.roles.data = rolesData;
+    games.conjugaison.data = conjugaisonData;
+    games.accords.data = accordsData;
+    selectGame('roles'); // Charger le jeu par défaut
+  } else {
+    document.getElementById('phrase').textContent = 'Erreur : Les données du jeu ne sont pas disponibles.';
+    console.error('Données du jeu manquantes ou invalides');
+  }
 }).catch(err => {
   console.error('Erreur de chargement des données:', err);
+  document.getElementById('phrase').textContent = 'Erreur : Impossible de charger les données du jeu.';
 });
 
 function selectGame(game) {
@@ -199,7 +238,7 @@ function checkAnswer(answer, game = currentGame) {
     gameData.totalPoints++;
   } else {
     selected.classList.add('rouge');
-    document.getElementById('feedback').textContent = '❌ Mauvaise réponse !';
+    document.getElementById('feedback').textContent = ' Mauvaise réponse !';
     gameData.totalErreurs++;
     const sound = document.getElementById('sound-bad');
     sound.currentTime = 0;
@@ -207,7 +246,125 @@ function checkAnswer(answer, game = currentGame) {
   }
 
   updateScoreboard(game);
-  document.getElementById('nextBtn').disabled = gameData.réponsesCorrectes.size === gameData.data[gameData.current].groupes.length;
+
+  if (gameData.réponsesCorrectes.size === gameData.data[gameData.current].groupes.length) {
+    document.getElementById('nextBtn').disabled = false;
+  }
+}
+
+function checkConjugaison() {
+  const input = document.getElementById('conjugaison-input').value.trim().toLowerCase();
+  const gameData = games.conjugaison;
+  const correct = gameData.data[gameData.current].correct.toLowerCase();
+
+  if (input === correct) {
+    document.getElementById('conjugaison-feedback').textContent = ' Bonne réponse !';
+    gameData.totalPoints++;
+    document.getElementById('nextConjugaison').disabled = false;
+  } else {
+    document.getElementById('conjugaison-feedback').textContent = ' Mauvaise réponse ! La bonne réponse était : ' + correct;
+    gameData.totalErreurs++;
+    document.getElementById('sound-bad').play();
+  }
+  updateScoreboard('conjugaison');
+}
+
+function checkAccords() {
+  const gameData = games.accords;
+  const currentData = gameData.data[gameData.current];
+  let correct = true;
+  let feedback = '';
+
+  // Vérifier le verbe
+  const verbeCorrect = document.querySelector('input[name="verbe"]:checked').value === 'oui';
+  const verbeExpected = currentData.accords.some(a => a.type === 'verbe' && a.correct);
+  if (verbeCorrect !== verbeExpected) {
+    correct = false;
+    feedback += ' Erreur sur l\'accord du verbe. ';
+  }
+
+  // Vérifier les adjectifs
+  const adjectifCorrect = document.querySelector('input[name="adjectif"]:checked').value === 'oui';
+  const adjectifExpected = currentData.accords.some(a => a.type === 'adjectif' && a.correct);
+  if (adjectifCorrect !== adjectifExpected) {
+    correct = false;
+    feedback += ' Erreur sur l\'accord de l\'adjectif. ';
+  }
+
+  if (correct) {
+    feedback = ' Bonne réponse ! Tous les accords sont corrects.';
+    gameData.totalPoints++;
+    document.getElementById('nextAccords').disabled = false;
+  } else {
+    feedback += '\nLes explications des accords corrects sont :\n' +
+                currentData.accords.map(a => `- ${a.explication}`).join('\n');
+    gameData.totalErreurs++;
+    document.getElementById('sound-bad').play();
+  }
+
+  document.getElementById('accords-feedback').textContent = feedback;
+  updateScoreboard('accords');
+}
+
+function nextConjugaison() {
+  const gameData = games.conjugaison;
+  const current = gameData.current;
+  
+  // Trouver un nouvel index non utilisé
+  let newIndex;
+  do {
+    newIndex = Math.floor(Math.random() * gameData.data.length);
+  } while (gameData.usedIndices.includes(newIndex));
+
+  gameData.current = newIndex;
+  gameData.usedIndices.push(newIndex);
+  gameData.réponsesCorrectes = new Set();
+
+  // Mettre à jour l'affichage
+  const conjugaisonData = gameData.data[newIndex];
+  document.getElementById('verbe').textContent = conjugaisonData.verbe;
+  document.getElementById('temps').textContent = conjugaisonData.temps;
+  document.getElementById('personne').textContent = conjugaisonData.personne;
+  document.getElementById('conjugaison-input').value = '';
+  document.getElementById('conjugaison-feedback').textContent = '';
+  document.getElementById('nextConjugaison').disabled = true;
+
+  // Réinitialiser si tous les indices ont été utilisés
+  if (gameData.usedIndices.length >= gameData.data.length) {
+    gameData.usedIndices = [];
+  }
+}
+
+function nextAccords() {
+  const gameData = games.accords;
+  const current = gameData.current;
+  
+  // Trouver un nouvel index non utilisé
+  let newIndex;
+  do {
+    newIndex = Math.floor(Math.random() * gameData.data.length);
+  } while (gameData.usedIndices.includes(newIndex));
+
+  gameData.current = newIndex;
+  gameData.usedIndices.push(newIndex);
+  gameData.réponsesCorrectes = new Set();
+
+  // Mettre à jour l'affichage
+  const accordsData = gameData.data[newIndex];
+  document.getElementById('accords-phrase').textContent = accordsData.phrase;
+  document.getElementById('accords-feedback').textContent = '';
+  document.getElementById('checkAccords').disabled = true;
+  document.getElementById('nextAccords').disabled = true;
+  
+  // Réinitialiser les radios
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.checked = false;
+  });
+
+  // Réinitialiser si tous les indices ont été utilisés
+  if (gameData.usedIndices.length >= gameData.data.length) {
+    gameData.usedIndices = [];
+  }
 }
 
 function nextPhrase(game = currentGame) {

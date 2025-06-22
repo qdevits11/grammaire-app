@@ -1,0 +1,62 @@
+[
+  {
+    "verbe": "parler",
+    "temps": "présent",
+    "personne": "je",
+    "correct": "parle"
+  },
+  {
+    "verbe": "manger",
+    "temps": "passé composé",
+    "personne": "nous",
+    "correct": "avons mangé"
+  },
+  {
+    "verbe": "aller",
+    "temps": "futur",
+    "personne": "ils",
+    "correct": "iront"
+  },
+  {
+    "verbe": "faire",
+    "temps": "conditionnel présent",
+    "personne": "tu",
+    "correct": "ferais"
+  },
+  {
+    "verbe": "prendre",
+    "temps": "imparfait",
+    "personne": "elle",
+    "correct": "prenait"
+  },
+  {
+    "verbe": "venir",
+    "temps": "plus-que-parfait",
+    "personne": "vous",
+    "correct": "aviez venu"
+  },
+  {
+    "verbe": "voir",
+    "temps": "passé simple",
+    "personne": "nous",
+    "correct": "vîmes"
+  },
+  {
+    "verbe": "pouvoir",
+    "temps": "subjonctif présent",
+    "personne": "il",
+    "correct": "puisse"
+  },
+  {
+    "verbe": "vouloir",
+    "temps": "subjonctif passé",
+    "personne": "je",
+    "correct": "eusse voulu"
+  },
+  {
+    "verbe": "savoir",
+    "temps": "futur antérieur",
+    "personne": "ils",
+    "correct": "auront su"
+  }
+]
