@@ -34,14 +34,17 @@
     const feedbackElement = document.getElementById('futur-feedback');
     
     // Vérifier la réponse
-    if (answer === currentData.type) {
+    const expectedAnswer = currentData.type;
+    console.log('Réponse attendue:', expectedAnswer, 'Réponse donnée:', answer);
+    
+    if (answer === expectedAnswer) {
       console.log('Bonne réponse');
       feedbackElement.textContent = '✅ Bonne réponse !';
       feedbackElement.style.color = 'green';
       gameData.totalPoints++;
     } else {
       console.log('Mauvaise réponse');
-      feedbackElement.textContent = `❌ Faux ! La bonne réponse était "${currentData.type}"`;
+      feedbackElement.textContent = `❌ Faux ! La bonne réponse était "${expectedAnswer}"`;
       feedbackElement.style.color = 'red';
       gameData.totalErreurs++;
       
@@ -49,7 +52,7 @@
       const sound = document.getElementById('sound-bad');
       if (sound) {
         sound.currentTime = 0;
-        sound.play();
+        sound.play().catch(e => console.error('Erreur de lecture du son:', e));
       }
     }
     
