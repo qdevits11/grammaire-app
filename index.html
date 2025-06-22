@@ -23,6 +23,9 @@
       return;
     }
     
+    console.log('Index actuel:', gameData.current, '/', gameData.data.length - 1);
+    console.log('Toutes les données:', gameData.data);
+    
     const currentData = gameData.data[gameData.current];
     if (!currentData) {
       console.error('Aucune donnée pour la phrase actuelle. Index:', gameData.current, 'Données:', gameData.data);
@@ -139,19 +142,19 @@
   // Initialiser les jeux dès que possible
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM chargé, initialisation des jeux...');
       initGames().then(() => {
-        // Une fois les jeux initialisés, on peut sélectionner le jeu par défaut
-        if (window.selectGame) {
-          window.selectGame('roles');
-        }
-      });
+        console.log('Jeux initialisés, sélection du jeu par défaut...');
+        // Sélectionner le jeu par défaut après le chargement des données
+        selectGame('roles');
+      }).catch(err => console.error('Erreur lors de l\'initialisation des jeux:', err));
     });
   } else {
+    console.log('DOM déjà chargé, initialisation directe des jeux...');
     initGames().then(() => {
-      if (window.selectGame) {
-        window.selectGame('roles');
-      }
-    });
+      console.log('Jeux initialisés, sélection du jeu par défaut...');
+      selectGame('roles');
+    }).catch(err => console.error('Erreur lors de l\'initialisation des jeux:', err));
   }
   </script>
 </head>
@@ -472,33 +475,48 @@ function checkAnswer(answer, game = currentGame) {
 
 function nextPhrase(game = currentGame) {
   const gameData = games[game];
+  if (!gameData) {
+    console.error('Jeu non trouvé:', game);
+    return;
+  }
+  
+  console.log('Passage à la phrase suivante. Indices utilisés:', gameData.usedIndices);
   
   // Réactiver les boutons de réponse
   document.querySelectorAll('.game-futur button:not(#nextFutur)').forEach(btn => {
     btn.disabled = false;
   });
   
-  if (gameData.usedIndices.length === gameData.data.length) {
-    // Réinitialiser les indices utilisés au lieu de réinitialiser tout le jeu
+  // Si toutes les phrases ont été utilisées, réinitialiser
+  if (gameData.usedIndices.length >= gameData.data.length) {
+    console.log('Toutes les phrases ont été utilisées, réinitialisation...');
     gameData.usedIndices = [];
-    gameData.current = 0;
-  } else {
-    let newIndex;
-    do {
-      newIndex = Math.floor(Math.random() * gameData.data.length);
-    } while (gameData.usedIndices.includes(newIndex));
-
-    gameData.usedIndices.push(newIndex);
-    gameData.current = newIndex;
   }
   
+  // Choisir une nouvelle phrase aléatoire qui n'a pas encore été utilisée
+  let newIndex;
+  do {
+    newIndex = Math.floor(Math.random() * gameData.data.length);
+  } while (gameData.usedIndices.includes(newIndex) && gameData.usedIndices.length < gameData.data.length);
+  
+  console.log('Nouvel index choisi:', newIndex, 'sur', gameData.data.length - 1);
+  
+  // Mettre à jour l'index actuel et l'ajouter aux indices utilisés
+  gameData.current = newIndex;
+  gameData.usedIndices.push(newIndex);
+  
+  console.log('Nouvelle phrase chargée:', gameData.data[gameData.current]);
+  
+  // Afficher la nouvelle phrase
   renderPhrase(game);
   
   // Désactiver le bouton suivant jusqu'à ce qu'une réponse soit donnée
   if (game === 'futur') {
-    document.getElementById('nextFutur').disabled = true;
+    const nextBtn = document.getElementById('nextFutur');
+    if (nextBtn) nextBtn.disabled = true;
   } else {
-    document.getElementById('nextBtn').disabled = true;
+    const nextBtn = document.getElementById('nextBtn');
+    if (nextBtn) nextBtn.disabled = true;
   }
 }
 
