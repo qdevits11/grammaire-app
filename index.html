@@ -59,7 +59,7 @@
             <button onclick="checkFutur('ir')">🔴 -ir</button>
           </div>
           <p id="futur-feedback"></p>
-          <button id="nextFutur" onclick="nextFutur()" disabled>👉 Phrase suivante</button>
+          <button id="nextFutur" onclick="nextPhrase('futur')" disabled>👉 Phrase suivante</button>
         </div>
       </div>
     </div>
@@ -89,23 +89,77 @@ let games = {
   }
 };
 
-// Charger les données pour chaque jeu
-Promise.all([
-  fetch('./data.json').then(response => response.json()),
-  fetch('./futur.json').then(response => response.json()).catch(() => [])
-]).then(([rolesData, futurData]) => {
-  if (rolesData && rolesData.length > 0) {
-    games.roles.data = rolesData;
-    games.futur.data = futurData;
-    selectGame('roles'); // Charger le jeu par défaut
-  } else {
-    document.getElementById('phrase').textContent = 'Erreur : Les données du jeu ne sont pas disponibles.';
-    console.error('Données du jeu manquantes ou invalides');
+// Charger les données des rôles depuis le fichier JSON
+fetch('./data.json')
+  .then(response => response.json())
+  .then(rolesData => {
+    if (rolesData && Array.isArray(rolesData) && rolesData.length > 0) {
+      games.roles.data = rolesData;
+      selectGame('roles'); // Charger le jeu par défaut après le chargement des données
+    } else {
+      console.error('Données des rôles invalides ou manquantes');
+      document.getElementById('phrase').textContent = 'Erreur : Données des rôles manquantes.';
+    }
+  })
+  .catch(err => {
+    console.error('Erreur de chargement des données des rôles:', err);
+    document.getElementById('phrase').textContent = 'Erreur : Impossible de charger les données des rôles.';
+  });
+
+// Données en dur pour le jeu futur
+games.futur.data = [
+  {
+    phrase: "Je mangerai une pomme demain.",
+    auxiliaire: "être"
+  },
+  {
+    phrase: "Elle viendra nous voir la semaine prochaine.",
+    auxiliaire: "être"
+  },
+  {
+    phrase: "Ils travailleront toute la journée.",
+    auxiliaire: "avoir"
   }
-}).catch(err => {
-  console.error('Erreur de chargement des données:', err);
-  document.getElementById('phrase').textContent = 'Erreur : Impossible de charger les données du jeu.';
+];
+
+// Initialiser le jeu futur avec les données en dur
+console.log('Initialisation du jeu futur avec les données:', games.futur.data);
+
+// Ajouter les gestionnaires d'événements pour les boutons du futur
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('Ajout des gestionnaires d\'événements pour les boutons du futur');
+  
+  // Gestionnaire pour le bouton être
+  const btnEtre = document.querySelector('button[onclick*="checkFutur(\'être\')"]');
+  if (btnEtre) {
+    console.log('Bouton être trouvé');
+    btnEtre.onclick = function() { checkFutur('être'); };
+  }
+  
+  // Gestionnaire pour le bouton avoir
+  const btnAvoir = document.querySelector('button[onclick*="checkFutur(\'avoir\')"]');
+  if (btnAvoir) {
+    console.log('Bouton avoir trouvé');
+    btnAvoir.onclick = function() { checkFutur('avoir'); };
+  }
+  
+  // Gestionnaire pour le bouton -er
+  const btnEr = document.querySelector('button[onclick*="checkFutur(\'er\')"]');
+  if (btnEr) {
+    console.log('Bouton -er trouvé');
+    btnEr.onclick = function() { checkFutur('er'); };
+  }
+  
+  // Gestionnaire pour le bouton -ir
+  const btnIr = document.querySelector('button[onclick*="checkFutur(\'ir\')"]');
+  if (btnIr) {
+    console.log('Bouton -ir trouvé');
+    btnIr.onclick = function() { checkFutur('ir'); };
+  }
 });
+
+// Charger le jeu par défaut (rôles)
+selectGame('roles');
 
 function selectGame(game) {
   // Mettre à jour le menu
@@ -206,6 +260,75 @@ function renderPhrase(game = currentGame) {
   }
 }
 
+// Fonction globale accessible depuis le HTML
+window.checkFutur = function(answer, game = 'futur') {
+  console.log('=== FONCTION checkFutur APPELÉE ===');
+  console.log('Bouton cliqué:', answer);
+  console.log('Jeu actuel:', game);
+  
+  // Vérifier si la fonction est bien appelée
+  debugger; // Ajout d'un point d'arrêt pour le débogage
+  
+  const gameData = games[game];
+  if (!gameData) {
+    console.error('Jeu non trouvé:', game);
+    return;
+  }
+  
+  const currentData = gameData.data[gameData.current];
+  if (!currentData) {
+    console.error('Aucune donnée pour la phrase actuelle');
+    return;
+  }
+  
+  const feedbackElement = document.getElementById('futur-feedback');
+  if (!feedbackElement) {
+    console.error('Élément de feedback non trouvé');
+    return;
+  }
+  
+  console.log('Données de la phrase actuelle:', currentData);
+  
+  // Vérifier si la réponse est correcte
+  const isCorrect = answer === currentData.auxiliaire || 
+                   (answer === 'er' && currentData.auxiliaire === 'avoir') ||
+                   (answer === 'ir' && currentData.auxiliaire === 'avoir');
+  
+  if (isCorrect) {
+    console.log('Bonne réponse !');
+    feedbackElement.textContent = '✅ Bonne réponse !';
+    feedbackElement.style.color = 'green';
+    gameData.totalPoints++;
+  } else {
+    console.log('Mauvaise réponse');
+    feedbackElement.textContent = '❌ Mauvaise réponse !';
+    feedbackElement.style.color = 'red';
+    gameData.totalErreurs++;
+    const sound = document.getElementById('sound-bad');
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(e => console.error('Erreur de lecture du son:', e));
+    }
+  }
+  
+  // Désactiver les boutons après une réponse
+  const buttons = document.querySelectorAll('.futur-content button:not(#nextFutur)');
+  console.log('Boutons trouvés:', buttons.length);
+  buttons.forEach(btn => {
+    btn.disabled = true;
+  });
+  
+  // Activer le bouton suivant
+  const nextButton = document.getElementById('nextFutur');
+  if (nextButton) {
+    nextButton.disabled = false;
+  } else {
+    console.error('Bouton suivant non trouvé');
+  }
+  
+  updateScoreboard(game);
+};
+
 function checkAnswer(answer, game = currentGame) {
   if (!selected) {
     alert("Clique sur un groupe de mots.");
@@ -242,22 +365,34 @@ function checkAnswer(answer, game = currentGame) {
 
 function nextPhrase(game = currentGame) {
   const gameData = games[game];
+  
+  // Réactiver les boutons de réponse
+  document.querySelectorAll('.game-futur button:not(#nextFutur)').forEach(btn => {
+    btn.disabled = false;
+  });
+  
   if (gameData.usedIndices.length === gameData.data.length) {
     // Réinitialiser les indices utilisés au lieu de réinitialiser tout le jeu
     gameData.usedIndices = [];
     gameData.current = 0;
-    renderPhrase(game);
-    return;
+  } else {
+    let newIndex;
+    do {
+      newIndex = Math.floor(Math.random() * gameData.data.length);
+    } while (gameData.usedIndices.includes(newIndex));
+
+    gameData.usedIndices.push(newIndex);
+    gameData.current = newIndex;
   }
-
-  let newIndex;
-  do {
-    newIndex = Math.floor(Math.random() * gameData.data.length);
-  } while (gameData.usedIndices.includes(newIndex));
-
-  gameData.usedIndices.push(newIndex);
-  gameData.current = newIndex;
+  
   renderPhrase(game);
+  
+  // Désactiver le bouton suivant jusqu'à ce qu'une réponse soit donnée
+  if (game === 'futur') {
+    document.getElementById('nextFutur').disabled = true;
+  } else {
+    document.getElementById('nextBtn').disabled = true;
+  }
 }
 
 // Fonction pour gérer le changement de jeu
