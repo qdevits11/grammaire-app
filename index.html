@@ -282,12 +282,6 @@ fetch('futur.json')
   })
   .catch(error => {
     console.error('Erreur lors du chargement du fichier futur.json:', error);
-    // Utiliser des données minimales en cas d'erreur
-    games.futur.data = [
-      { phrase: "Je chanterai une chanson", type: "er", correct: "chanterai" },
-      { phrase: "Tu finiras ton travail", type: "ir", correct: "finiras" }
-    ];
-    console.warn('Utilisation des données par défaut pour le jeu futur');
   });
 
 // Ajouter les gestionnaires d'événements pour les boutons du futur
