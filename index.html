@@ -5,6 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Révision Grammaire</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+  // Définition de la fonction checkFutur en premier
+  function checkFutur(answer, game = 'futur') {
+    console.log('=== FONCTION checkFutur APPELÉE ===');
+    console.log('Bouton cliqué:', answer);
+    
+    // Attendre que l'objet games soit disponible
+    if (!window.games) {
+      console.error('L\'objet games n\'est pas encore chargé');
+      return;
+    }
+    
+    const gameData = window.games[game];
+    if (!gameData) {
+      console.error('Jeu non trouvé:', game, 'Disponibles:', Object.keys(window.games));
+      return;
+    }
+    
+    const currentData = gameData.data && gameData.data[gameData.current];
+    if (!currentData) {
+      console.error('Aucune donnée pour la phrase actuelle. Index:', gameData.current, 'Données:', gameData.data);
+      return;
+    }
+    
+    const feedbackElement = document.getElementById('futur-feedback');
+    if (!feedbackElement) {
+      console.error('Élément de feedback non trouvé');
+      return;
+    }
+    
+    console.log('Données de la phrase actuelle:', currentData);
+    
+    // Vérifier si la réponse est correcte
+    const isCorrect = answer === currentData.auxiliaire || 
+                     (answer === 'er' && currentData.auxiliaire === 'avoir') ||
+                     (answer === 'ir' && currentData.auxiliaire === 'avoir');
+    
+    if (isCorrect) {
+      console.log('Bonne réponse !');
+      feedbackElement.textContent = '✅ Bonne réponse !';
+      feedbackElement.style.color = 'green';
+      gameData.totalPoints++;
+    } else {
+      console.log('Mauvaise réponse');
+      feedbackElement.textContent = '❌ Mauvaise réponse !';
+      feedbackElement.style.color = 'red';
+      gameData.totalErreurs++;
+      const sound = document.getElementById('sound-bad');
+      if (sound) {
+        sound.currentTime = 0;
+        sound.play().catch(e => console.error('Erreur de lecture du son:', e));
+      }
+    }
+    
+    // Désactiver les boutons après une réponse
+    const buttons = document.querySelectorAll('.futur-content button:not(#nextFutur)');
+    console.log('Boutons trouvés:', buttons.length);
+    buttons.forEach(btn => {
+      btn.disabled = true;
+    });
+    
+    // Activer le bouton suivant
+    const nextButton = document.getElementById('nextFutur');
+    if (nextButton) {
+      nextButton.disabled = false;
+    } else {
+      console.error('Bouton suivant non trouvé');
+    }
+    
+    if (window.updateScoreboard) {
+      window.updateScoreboard(game);
+    }
+  }
+  
+  // Rendre la fonction disponible globalement
+  window.checkFutur = checkFutur;
+  
+  // Fonction pour charger les données du jeu futur depuis le fichier JSON
+  function loadFuturData() {
+    return fetch('futur.json')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erreur de chargement des données du futur');
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Données du futur chargées:', data);
+        return data.data.map(item => ({
+          phrase: item.phrase,
+          auxiliaire: item.type,
+          correct: item.correct
+        }));
+      })
+      .catch(error => {
+        console.error('Erreur lors du chargement des données du futur:', error);
+        return [];
+      });
+  }
+
+  // Fonction pour initialiser les jeux
+  async function initGames() {
+    if (!window.games) {
+      // Initialiser la structure des jeux
+      window.games = {
+        roles: {
+          data: [],
+          current: 0,
+          usedIndices: [],
+          réponsesCorrectes: new Set(),
+          totalPoints: 0,
+          totalErreurs: 0
+        },
+        futur: {
+          data: [],
+          current: 0,
+          usedIndices: [],
+          réponsesCorrectes: new Set(),
+          totalPoints: 0,
+          totalErreurs: 0
+        }
+      };
+      
+      // Charger les données du futur
+      try {
+        const futurData = await loadFuturData();
+        if (futurData.length > 0) {
+          window.games.futur.data = futurData;
+          console.log('Données du jeu futur chargées avec succès');
+        } else {
+          console.warn('Aucune donnée chargée pour le jeu futur');
+        }
+      } catch (error) {
+        console.error('Erreur lors du chargement des données:', error);
+      }
+      
+      console.log('Jeux initialisés avec succès');
+    }
+  }
+  
+  // Initialiser les jeux dès que possible
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      initGames().then(() => {
+        // Une fois les jeux initialisés, on peut sélectionner le jeu par défaut
+        if (window.selectGame) {
+          window.selectGame('roles');
+        }
+      });
+    });
+  } else {
+    initGames().then(() => {
+      if (window.selectGame) {
+        window.selectGame('roles');
+      }
+    });
+  }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -260,74 +418,7 @@ function renderPhrase(game = currentGame) {
   }
 }
 
-// Fonction globale accessible depuis le HTML
-window.checkFutur = function(answer, game = 'futur') {
-  console.log('=== FONCTION checkFutur APPELÉE ===');
-  console.log('Bouton cliqué:', answer);
-  console.log('Jeu actuel:', game);
-  
-  // Vérifier si la fonction est bien appelée
-  debugger; // Ajout d'un point d'arrêt pour le débogage
-  
-  const gameData = games[game];
-  if (!gameData) {
-    console.error('Jeu non trouvé:', game);
-    return;
-  }
-  
-  const currentData = gameData.data[gameData.current];
-  if (!currentData) {
-    console.error('Aucune donnée pour la phrase actuelle');
-    return;
-  }
-  
-  const feedbackElement = document.getElementById('futur-feedback');
-  if (!feedbackElement) {
-    console.error('Élément de feedback non trouvé');
-    return;
-  }
-  
-  console.log('Données de la phrase actuelle:', currentData);
-  
-  // Vérifier si la réponse est correcte
-  const isCorrect = answer === currentData.auxiliaire || 
-                   (answer === 'er' && currentData.auxiliaire === 'avoir') ||
-                   (answer === 'ir' && currentData.auxiliaire === 'avoir');
-  
-  if (isCorrect) {
-    console.log('Bonne réponse !');
-    feedbackElement.textContent = '✅ Bonne réponse !';
-    feedbackElement.style.color = 'green';
-    gameData.totalPoints++;
-  } else {
-    console.log('Mauvaise réponse');
-    feedbackElement.textContent = '❌ Mauvaise réponse !';
-    feedbackElement.style.color = 'red';
-    gameData.totalErreurs++;
-    const sound = document.getElementById('sound-bad');
-    if (sound) {
-      sound.currentTime = 0;
-      sound.play().catch(e => console.error('Erreur de lecture du son:', e));
-    }
-  }
-  
-  // Désactiver les boutons après une réponse
-  const buttons = document.querySelectorAll('.futur-content button:not(#nextFutur)');
-  console.log('Boutons trouvés:', buttons.length);
-  buttons.forEach(btn => {
-    btn.disabled = true;
-  });
-  
-  // Activer le bouton suivant
-  const nextButton = document.getElementById('nextFutur');
-  if (nextButton) {
-    nextButton.disabled = false;
-  } else {
-    console.error('Bouton suivant non trouvé');
-  }
-  
-  updateScoreboard(game);
-};
+// La fonction checkFutur est maintenant définie dans le <head> pour être disponible immédiatement
 
 function checkAnswer(answer, game = currentGame) {
   if (!selected) {
