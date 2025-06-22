@@ -2637,17 +2637,135 @@ function afficherFormeSuivante() {
 
 // Afficher les résultats finaux
 function afficherResultats() {
-  document.getElementById('forme-container').style.display = 'none';
-  const resultats = document.getElementById('resultats');
-  document.getElementById('score').textContent = scoreGeometrie;
-  document.getElementById('total').textContent = totalFormes;
-  resultats.style.display = 'block';
+  console.log('Affichage des résultats finaux...');
+  
+  try {
+    // Masquer le conteneur de forme s'il existe
+    const formeContainer = document.getElementById('forme-container');
+    if (formeContainer) {
+      formeContainer.style.display = 'none';
+    }
+    
+    // Récupérer les éléments d'interface
+    const resultats = document.getElementById('resultats');
+    const scoreElement = document.getElementById('score');
+    const totalElement = document.getElementById('total');
+    const messageElement = document.getElementById('message-score');
+    
+    // Vérifier que les éléments existent
+    if (!resultats || !scoreElement || !totalElement) {
+      console.error('Éléments d\'interface des résultats manquants');
+      return;
+    }
+    
+    // Mettre à jour les scores
+    scoreElement.textContent = scoreGeometrie || 0;
+    totalElement.textContent = totalFormes || 0;
+    
+    // Afficher un message personnalisé en fonction du score
+    if (messageElement) {
+      const pourcentage = totalFormes > 0 ? Math.round((scoreGeometrie / totalFormes) * 100) : 0;
+      
+      if (pourcentage >= 90) {
+        messageElement.textContent = 'Excellent travail ! Vous maîtrisez parfaitement ce sujet !';
+        messageElement.className = 'excellent';
+      } else if (pourcentage >= 70) {
+        messageElement.textContent = 'Bravo ! Bonne performance, continuez comme ça !';
+        messageElement.className = 'bon';
+      } else if (pourcentage >= 50) {
+        messageElement.textContent = 'Pas mal ! Encore un peu de pratique pour vous perfectionner.';
+        messageElement.className = 'moyen';
+      } else {
+        messageElement.textContent = 'Ne vous découragez pas ! Revoyez les définitions et réessayez.';
+        messageElement.className = 'a-ameliorer';
+      }
+    }
+    
+    // Afficher la section des résultats
+    resultats.style.display = 'block';
+    
+    console.log(`Résultats affichés: ${scoreGeometrie}/${totalFormes} (${Math.round((scoreGeometrie / totalFormes) * 100)}%)`);
+    
+  } catch (error) {
+    console.error('Erreur lors de l\'affichage des résultats:', error);
+    
+    // Afficher un message d'erreur à l'utilisateur
+    const feedback = document.getElementById('feedback');
+    const feedbackTexte = document.getElementById('feedback-texte');
+    
+    if (feedback && feedbackTexte) {
+      feedback.className = 'feedback error';
+      feedbackTexte.textContent = 'Une erreur est survenue lors de l\'affichage des résultats.';
+      feedback.style.display = 'block';
+    }
+  }
 }
 
 // Recommencer le niveau
 function recommencerNiveau() {
-  if (niveauActuel) {
+  console.log('Recommencement du niveau...');
+  
+  try {
+    // Vérifier qu'un niveau est en cours
+    if (!niveauActuel || !niveauActuel.id) {
+      console.error('Aucun niveau en cours à recommencer');
+      
+      // Essayer de revenir à la sélection de niveau
+      const selectionNiveau = document.querySelector('.niveau-selection');
+      const interfaceJeu = document.getElementById('jeu-geometrie');
+      
+      if (selectionNiveau && interfaceJeu) {
+        selectionNiveau.style.display = 'block';
+        interfaceJeu.style.display = 'none';
+      }
+      
+      return;
+    }
+    
+    // Réinitialiser les variables du jeu
+    scoreGeometrie = 0;
+    reponseSelectionnee = null;
+    formesJouees = [];
+    
+    console.log(`Niveau à recommencer: ${niveauActuel.id}`);
+    
+    // Masquer les résultats s'ils sont affichés
+    const resultats = document.getElementById('resultats');
+    if (resultats) {
+      resultats.style.display = 'none';
+    }
+    
+    // Réafficher l'interface de jeu
+    const interfaceJeu = document.getElementById('jeu-geometrie');
+    if (interfaceJeu) {
+      interfaceJeu.style.display = 'block';
+    }
+    
+    // Redémarrer le niveau
     demarrerNiveau(niveauActuel.id);
+    
+  } catch (error) {
+    console.error('Erreur lors du recommencement du niveau:', error);
+    
+    // Afficher un message d'erreur à l'utilisateur
+    const feedback = document.getElementById('feedback');
+    const feedbackTexte = document.getElementById('feedback-texte');
+    
+    if (feedback && feedbackTexte) {
+      feedback.className = 'feedback error';
+      feedbackTexte.textContent = 'Une erreur est survenue lors du recommencement du niveau.';
+      feedback.style.display = 'block';
+    }
+    
+    // Essayer de revenir à la sélection de niveau
+    try {
+      const selectionNiveau = document.querySelector('.niveau-selection');
+      if (selectionNiveau) {
+        selectionNiveau.style.display = 'block';
+      }
+    } catch (e) {
+      console.error('Impossible de revenir à la sélection de niveau:', e);
+    }
   }
 }
 
