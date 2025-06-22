@@ -7,30 +7,25 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <button class="menu-btn" onclick="toggleMenu()">☰</button>
-  <nav class="sidebar">
-    <div class="logo">
-      <h2>Révision Grammaire</h2>
-    </div>
-    <ul class="menu">
-      <li class="active">
-        <a href="#roles" onclick="selectGame('roles')">
-          <span>🔍 Rôles des groupes</span>
-        </a>
-      </li>
-      <li>
-        <a href="#conjugaison" onclick="selectGame('conjugaison')">
-          <span>📝 Conjugaison</span>
-        </a>
-      </li>
-      <li>
-        <a href="#accords" onclick="selectGame('accords')">
-          <span>🔄 Accords</span>
-        </a>
-      </li>
-    </ul>
-  </nav>
-
+  <div class="container">
+    <button class="menu-btn" onclick="toggleMenu()">☰</button>
+    <nav class="sidebar">
+      <div class="logo">
+        <h2>Révision Grammaire</h2>
+      </div>
+      <ul class="menu">
+        <li class="active">
+          <a href="#roles" onclick="selectGame('roles')">
+            <span>🔍 Rôles des groupes</span>
+          </a>
+        </li>
+        <li>
+          <a href="#futur" onclick="selectGame('futur')">
+            <span>🔮 Futur simple</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
   <main class="main-content">
     <div class="top-bar">
       <div id="scoreboard">
@@ -53,73 +48,29 @@
         <p id="feedback"></p>
         <button id="nextBtn" onclick="nextPhrase()" disabled>👉 Phrase suivante</button>
       </div>
-
-      <div class="game-conjugaison" style="display: none;">
-        <h1>Conjugaison</h1>
-        <div class="conjugaison-content">
-          <div class="conjugaison-info">
-            <span class="verbe">Verbe : <span id="verbe">-</span></span>
-            <span class="temps">Temps : <span id="temps">-</span></span>
-            <span class="personne">Personne : <span id="personne">-</span></span>
+      <div class="game-futur" style="display: none;">
+        <h1>Conjugaison au futur simple</h1>
+        <div class="futur-content">
+          <div class="futur-phrase" id="futur-phrase">Chargement de la phrase...</div>
+          <div>
+            <button onclick="checkFutur('être')">🔵 être</button>
+            <button onclick="checkFutur('avoir')">🔴 avoir</button>
+            <button onclick="checkFutur('er')">🔵 -er</button>
+            <button onclick="checkFutur('ir')">🔴 -ir</button>
           </div>
-          <div class="conjugaison-input">
-            <input type="text" id="conjugaison-input" placeholder="Conjuguez le verbe...">
-            <button onclick="checkConjugaison()">Vérifier</button>
-          </div>
-          <div id="conjugaison-feedback"></div>
-          <button id="nextConjugaison" onclick="nextConjugaison()" disabled>Phrase suivante</button>
-        </div>
-      </div>
-
-      <div class="game-accords" style="display: none;">
-        <h1>Accords</h1>
-        <div class="accords-content">
-          <div class="accords-phrase" id="accords-phrase">-</div>
-          <div class="accords-questions">
-            <div class="question">
-              <label>Le verbe est-il correctement conjugué ?</label>
-              <div class="options">
-                <label><input type="radio" name="verbe" value="oui"> Oui</label>
-                <label><input type="radio" name="verbe" value="non"> Non</label>
-              </div>
-            </div>
-            <div class="question">
-              <label>Les adjectifs sont-ils correctement accordés ?</label>
-              <div class="options">
-                <label><input type="radio" name="adjectif" value="oui"> Oui</label>
-                <label><input type="radio" name="adjectif" value="non"> Non</label>
-              </div>
-            </div>
-          </div>
-          <div id="accords-feedback"></div>
-          <button id="checkAccords" onclick="checkAccords()" disabled>Vérifier</button>
-          <button id="nextAccords" onclick="nextAccords()" disabled>Phrase suivante</button>
+          <p id="futur-feedback"></p>
+          <button id="nextFutur" onclick="nextFutur()" disabled>👉 Phrase suivante</button>
         </div>
       </div>
     </div>
     <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
   </main>
 
+
 <script>
 let currentGame = 'roles'; // Game par défaut
 let games = {
-  roles: {
-    data: [],
-    current: 0,
-    usedIndices: [],
-    réponsesCorrectes: new Set(),
-    totalPoints: 0,
-    totalErreurs: 0
-  },
-  conjugaison: {
-    data: [],
-    current: 0,
-    usedIndices: [],
-    réponsesCorrectes: new Set(),
-    totalPoints: 0,
-    totalErreurs: 0
-  },
-  accords: {
+  futur: {
     data: [],
     current: 0,
     usedIndices: [],
@@ -132,13 +83,11 @@ let games = {
 // Charger les données pour chaque jeu
 Promise.all([
   fetch('./data.json').then(response => response.json()),
-  fetch('./conjugaison.json').then(response => response.json()).catch(() => []),
-  fetch('./accords.json').then(response => response.json()).catch(() => [])
-]).then(([rolesData, conjugaisonData, accordsData]) => {
+  fetch('./futur.json').then(response => response.json()).catch(() => [])
+]).then(([rolesData, futurData]) => {
   if (rolesData && rolesData.length > 0) {
     games.roles.data = rolesData;
-    games.conjugaison.data = conjugaisonData;
-    games.accords.data = accordsData;
+    games.futur.data = futurData;
     selectGame('roles'); // Charger le jeu par défaut
   } else {
     document.getElementById('phrase').textContent = 'Erreur : Les données du jeu ne sont pas disponibles.';
@@ -172,11 +121,27 @@ function selectGame(game) {
 }
 
 function resetGame(game = currentGame) {
-  games[game].totalPoints = 0;
-  games[game].totalErreurs = 0;
-  games[game].usedIndices = [];
+  const gameData = games[game];
+  gameData.totalPoints = 0;
+  gameData.totalErreurs = 0;
+  gameData.usedIndices = [];
+  gameData.current = 0;
+  gameData.réponsesCorrectes = new Set();
+  
+  // Réinitialiser l'affichage selon le type de jeu
+  switch(game) {
+    case 'roles':
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('nextBtn').disabled = true;
+      break;
+    case 'futur':
+      document.getElementById('futur-feedback').textContent = '';
+      document.getElementById('nextFutur').disabled = true;
+      break;
+  }
+  
   updateScoreboard(game);
-  nextPhrase(game);
+  renderPhrase(game);
 }
 
 function updateScoreboard(game = currentGame) {
@@ -253,120 +218,7 @@ function checkAnswer(answer, game = currentGame) {
   }
 }
 
-function checkConjugaison() {
-  const input = document.getElementById('conjugaison-input').value.trim().toLowerCase();
-  const gameData = games.conjugaison;
-  const correct = gameData.data[gameData.current].correct.toLowerCase();
 
-  if (input === correct) {
-    document.getElementById('conjugaison-feedback').textContent = ' Bonne réponse !';
-    gameData.totalPoints++;
-    document.getElementById('nextConjugaison').disabled = false;
-  } else {
-    document.getElementById('conjugaison-feedback').textContent = ' Mauvaise réponse ! La bonne réponse était : ' + correct;
-    gameData.totalErreurs++;
-    document.getElementById('sound-bad').play();
-  }
-  updateScoreboard('conjugaison');
-}
-
-function checkAccords() {
-  const gameData = games.accords;
-  const currentData = gameData.data[gameData.current];
-  let correct = true;
-  let feedback = '';
-
-  // Vérifier le verbe
-  const verbeCorrect = document.querySelector('input[name="verbe"]:checked').value === 'oui';
-  const verbeExpected = currentData.accords.some(a => a.type === 'verbe' && a.correct);
-  if (verbeCorrect !== verbeExpected) {
-    correct = false;
-    feedback += ' Erreur sur l\'accord du verbe. ';
-  }
-
-  // Vérifier les adjectifs
-  const adjectifCorrect = document.querySelector('input[name="adjectif"]:checked').value === 'oui';
-  const adjectifExpected = currentData.accords.some(a => a.type === 'adjectif' && a.correct);
-  if (adjectifCorrect !== adjectifExpected) {
-    correct = false;
-    feedback += ' Erreur sur l\'accord de l\'adjectif. ';
-  }
-
-  if (correct) {
-    feedback = ' Bonne réponse ! Tous les accords sont corrects.';
-    gameData.totalPoints++;
-    document.getElementById('nextAccords').disabled = false;
-  } else {
-    feedback += '\nLes explications des accords corrects sont :\n' +
-                currentData.accords.map(a => `- ${a.explication}`).join('\n');
-    gameData.totalErreurs++;
-    document.getElementById('sound-bad').play();
-  }
-
-  document.getElementById('accords-feedback').textContent = feedback;
-  updateScoreboard('accords');
-}
-
-function nextConjugaison() {
-  const gameData = games.conjugaison;
-  const current = gameData.current;
-  
-  // Trouver un nouvel index non utilisé
-  let newIndex;
-  do {
-    newIndex = Math.floor(Math.random() * gameData.data.length);
-  } while (gameData.usedIndices.includes(newIndex));
-
-  gameData.current = newIndex;
-  gameData.usedIndices.push(newIndex);
-  gameData.réponsesCorrectes = new Set();
-
-  // Mettre à jour l'affichage
-  const conjugaisonData = gameData.data[newIndex];
-  document.getElementById('verbe').textContent = conjugaisonData.verbe;
-  document.getElementById('temps').textContent = conjugaisonData.temps;
-  document.getElementById('personne').textContent = conjugaisonData.personne;
-  document.getElementById('conjugaison-input').value = '';
-  document.getElementById('conjugaison-feedback').textContent = '';
-  document.getElementById('nextConjugaison').disabled = true;
-
-  // Réinitialiser si tous les indices ont été utilisés
-  if (gameData.usedIndices.length >= gameData.data.length) {
-    gameData.usedIndices = [];
-  }
-}
-
-function nextAccords() {
-  const gameData = games.accords;
-  const current = gameData.current;
-  
-  // Trouver un nouvel index non utilisé
-  let newIndex;
-  do {
-    newIndex = Math.floor(Math.random() * gameData.data.length);
-  } while (gameData.usedIndices.includes(newIndex));
-
-  gameData.current = newIndex;
-  gameData.usedIndices.push(newIndex);
-  gameData.réponsesCorrectes = new Set();
-
-  // Mettre à jour l'affichage
-  const accordsData = gameData.data[newIndex];
-  document.getElementById('accords-phrase').textContent = accordsData.phrase;
-  document.getElementById('accords-feedback').textContent = '';
-  document.getElementById('checkAccords').disabled = true;
-  document.getElementById('nextAccords').disabled = true;
-  
-  // Réinitialiser les radios
-  document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.checked = false;
-  });
-
-  // Réinitialiser si tous les indices ont été utilisés
-  if (gameData.usedIndices.length >= gameData.data.length) {
-    gameData.usedIndices = [];
-  }
-}
 
 function nextPhrase(game = currentGame) {
   const gameData = games[game];
@@ -389,7 +241,35 @@ function nextPhrase(game = currentGame) {
 }
 
 // Fonction pour gérer le changement de jeu
-window.selectGame = selectGame;
+function selectGame(game) {
+  // Fermer le menu sur mobile/tablette
+  if (window.innerWidth <= 1024) {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.remove('active');
+    }
+  }
+
+  // Mettre à jour le menu
+  document.querySelectorAll('.menu li').forEach(li => {
+    li.classList.remove('active');
+    if (li.children[0].href.includes(`#${game}`)) {
+      li.classList.add('active');
+    }
+  });
+
+  // Cacher tous les jeux
+  document.querySelectorAll('.game-content > div').forEach(div => {
+    div.style.display = 'none';
+  });
+
+  // Afficher le jeu sélectionné
+  const gameDiv = document.querySelector(`.game-${game}`);
+  gameDiv.style.display = 'block';
+
+  // Réinitialiser les scores
+  resetGame(game);
+}
 
 // Fonction pour gérer le menu hamburger
 function toggleMenu() {
@@ -397,9 +277,14 @@ function toggleMenu() {
   const mainContent = document.querySelector('.main-content');
   const menuBtn = document.querySelector('.menu-btn');
   
+  // Toggle la classe active sur la sidebar
   sidebar.classList.toggle('active');
-  mainContent.classList.toggle('active');
-  menuBtn.textContent = sidebar.classList.contains('active') ? '' : '';
+  
+  // Ajuster le margin-left du contenu principal
+  mainContent.style.marginLeft = sidebar.classList.contains('active') ? '250px' : '0';
+  
+  // Ajuster la position du bouton menu
+  menuBtn.style.left = sidebar.classList.contains('active') ? '260px' : '1rem';
 }
 </script>
 </body>

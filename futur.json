@@ -1,0 +1,44 @@
+{
+  "data": [
+    {
+      "phrase": "Je chanterai une chanson",
+      "type": "er",
+      "correct": "chanterai"
+    },
+    {
+      "phrase": "Tu finiras ton travail",
+      "type": "ir",
+      "correct": "finiras"
+    },
+    {
+      "phrase": "Il sera là demain",
+      "type": "être",
+      "correct": "sera"
+    },
+    {
+      "phrase": "Nous aurons fini",
+      "type": "avoir",
+      "correct": "aurons"
+    },
+    {
+      "phrase": "Elle chantera pour nous",
+      "type": "er",
+      "correct": "chantera"
+    },
+    {
+      "phrase": "Ils finiront plus tard",
+      "type": "ir",
+      "correct": "finiront"
+    },
+    {
+      "phrase": "Je serai là",
+      "type": "être",
+      "correct": "serai"
+    },
+    {
+      "phrase": "Tu auras réussi",
+      "type": "avoir",
+      "correct": "auras"
+    }
+  ]
+}
