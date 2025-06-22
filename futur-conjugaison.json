@@ -1,0 +1,144 @@
+{
+  "verbes": [
+    {
+      "infinitif": "parler",
+      "conjugaisons": {
+        "je": "parlerai",
+        "tu": "parleras",
+        "il": "parlera",
+        "elle": "parlera",
+        "on": "parlera",
+        "nous": "parlerons",
+        "vous": "parlerez",
+        "ils": "parleront",
+        "elles": "parleront"
+      }
+    },
+    {
+      "infinitif": "finir",
+      "conjugaisons": {
+        "je": "finirai",
+        "tu": "finiras",
+        "il": "finira",
+        "elle": "finira",
+        "on": "finira",
+        "nous": "finirons",
+        "vous": "finirez",
+        "ils": "finiront",
+        "elles": "finiront"
+      }
+    },
+    {
+      "infinitif": "vendre",
+      "conjugaisons": {
+        "je": "vendrai",
+        "tu": "vendras",
+        "il": "vendra",
+        "elle": "vendra",
+        "on": "vendra",
+        "nous": "vendrons",
+        "vous": "vendrez",
+        "ils": "vendront",
+        "elles": "vendront"
+      }
+    },
+    {
+      "infinitif": "aller",
+      "conjugaisons": {
+        "je": "irai",
+        "tu": "iras",
+        "il": "ira",
+        "elle": "ira",
+        "on": "ira",
+        "nous": "irons",
+        "vous": "irez",
+        "ils": "iront",
+        "elles": "iront"
+      }
+    },
+    {
+      "infinitif": "être",
+      "conjugaisons": {
+        "je": "serai",
+        "tu": "seras",
+        "il": "sera",
+        "elle": "sera",
+        "on": "sera",
+        "nous": "serons",
+        "vous": "serez",
+        "ils": "seront",
+        "elles": "seront"
+      }
+    },
+    {
+      "infinitif": "avoir",
+      "conjugaisons": {
+        "je": "aurai",
+        "tu": "auras",
+        "il": "aura",
+        "elle": "aura",
+        "on": "aura",
+        "nous": "aurons",
+        "vous": "aurez",
+        "ils": "auront",
+        "elles": "auront"
+      }
+    },
+    {
+      "infinitif": "faire",
+      "conjugaisons": {
+        "je": "ferai",
+        "tu": "feras",
+        "il": "fera",
+        "elle": "fera",
+        "on": "fera",
+        "nous": "ferons",
+        "vous": "ferez",
+        "ils": "feront",
+        "elles": "feront"
+      }
+    },
+    {
+      "infinitif": "pouvoir",
+      "conjugaisons": {
+        "je": "pourrai",
+        "tu": "pourras",
+        "il": "pourra",
+        "elle": "pourra",
+        "on": "pourra",
+        "nous": "pourrons",
+        "vous": "pourrez",
+        "ils": "pourront",
+        "elles": "pourront"
+      }
+    },
+    {
+      "infinitif": "venir",
+      "conjugaisons": {
+        "je": "viendrai",
+        "tu": "viendras",
+        "il": "viendra",
+        "elle": "viendra",
+        "on": "viendra",
+        "nous": "viendrons",
+        "vous": "viendrez",
+        "ils": "viendront",
+        "elles": "viendront"
+      }
+    },
+    {
+      "infinitif": "voir",
+      "conjugaisons": {
+        "je": "verrai",
+        "tu": "verras",
+        "il": "verra",
+        "elle": "verra",
+        "on": "verra",
+        "nous": "verrons",
+        "vous": "verrez",
+        "ils": "verront",
+        "elles": "verront"
+      }
+    }
+  ]
+}
