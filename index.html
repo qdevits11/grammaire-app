@@ -23,14 +23,27 @@
       return;
     }
     
-    console.log('Index actuel:', gameData.current, '/', gameData.data.length - 1);
-    console.log('Toutes les données:', gameData.data);
+    // Vérifier que l'index actuel est valide
+    if (typeof gameData.current === 'undefined' || gameData.current === null) {
+      console.error('Index actuel non défini, réinitialisation...');
+      gameData.current = 0;
+    }
     
-    const currentData = gameData.data[gameData.current];
+    let currentData = gameData.data[gameData.current];
     if (!currentData) {
       console.error('Aucune donnée pour la phrase actuelle. Index:', gameData.current, 'Données:', gameData.data);
-      return;
+      // Essayer de récupérer la première phrase
+      if (gameData.data.length > 0) {
+        console.log('Tentative de récupération de la première phrase...');
+        gameData.current = 0;
+        currentData = gameData.data[0];
+      } else {
+        return;
+      }
     }
+    
+    console.log('Index actuel:', gameData.current, '/', gameData.data.length - 1);
+    console.log('Toutes les données:', gameData.data);
     
     console.log('Données de la phrase actuelle:', currentData);
     
@@ -549,6 +562,7 @@ function nextPhrase(game = currentGame) {
   gameData.usedIndices.push(newIndex);
   
   console.log('Nouvelle phrase chargée:', gameData.data[gameData.current]);
+  console.log('Index actuel après mise à jour:', gameData.current);
   
   // Afficher la nouvelle phrase
   renderPhrase(game);
