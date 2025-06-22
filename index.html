@@ -84,24 +84,36 @@
   
   // Fonction pour charger les données du jeu futur depuis le fichier JSON
   function loadFuturData() {
+    console.log('Début du chargement de futur.json...');
     return fetch('futur.json')
       .then(response => {
+        console.log('Réponse reçue pour futur.json:', response.status, response.statusText);
         if (!response.ok) {
-          throw new Error('Erreur de chargement des données du futur');
+          throw new Error(`Erreur HTTP: ${response.status} ${response.statusText}`);
         }
         return response.json();
       })
       .then(data => {
-        console.log('Données du futur chargées:', data);
-        return data.data.map(item => ({
+        if (!data || !data.data || !Array.isArray(data.data)) {
+          throw new Error('Format de données invalide dans futur.json');
+        }
+        console.log('Données brutes du futur chargées:', data);
+        const processedData = data.data.map(item => ({
           phrase: item.phrase,
           auxiliaire: item.type,
           correct: item.correct
         }));
+        console.log('Données du futur transformées:', processedData);
+        return processedData;
       })
       .catch(error => {
         console.error('Erreur lors du chargement des données du futur:', error);
-        return [];
+        // En cas d'erreur, on retourne des données par défaut pour éviter que le jeu ne plante
+        console.warn('Utilisation des données par défaut pour le jeu futur');
+        return [
+          { phrase: "Je chanterai une chanson", auxiliaire: "er", correct: "chanterai" },
+          { phrase: "Tu finiras ton travail", auxiliaire: "ir", correct: "finiras" }
+        ];
       });
   }
 
