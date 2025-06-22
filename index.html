@@ -23,64 +23,52 @@
       return;
     }
     
-    const currentData = gameData.data && gameData.data[gameData.current];
+    const currentData = gameData.data[gameData.current];
     if (!currentData) {
       console.error('Aucune donnée pour la phrase actuelle. Index:', gameData.current, 'Données:', gameData.data);
       return;
     }
     
-    const feedbackElement = document.getElementById('futur-feedback');
-    if (!feedbackElement) {
-      console.error('Élément de feedback non trouvé');
-      return;
-    }
-    
     console.log('Données de la phrase actuelle:', currentData);
     
-    // Vérifier si la réponse est correcte
-    const isCorrect = answer === currentData.auxiliaire || 
-                     (answer === 'er' && currentData.auxiliaire === 'avoir') ||
-                     (answer === 'ir' && currentData.auxiliaire === 'avoir');
+    const feedbackElement = document.getElementById('futur-feedback');
     
-    if (isCorrect) {
-      console.log('Bonne réponse !');
+    // Vérifier la réponse
+    if (answer === currentData.type) {
+      console.log('Bonne réponse');
       feedbackElement.textContent = '✅ Bonne réponse !';
       feedbackElement.style.color = 'green';
       gameData.totalPoints++;
     } else {
       console.log('Mauvaise réponse');
-      feedbackElement.textContent = '❌ Mauvaise réponse !';
+      feedbackElement.textContent = `❌ Faux ! La bonne réponse était "${currentData.type}"`;
       feedbackElement.style.color = 'red';
       gameData.totalErreurs++;
+      
+      // Jouer un son d'erreur
       const sound = document.getElementById('sound-bad');
       if (sound) {
         sound.currentTime = 0;
-        sound.play().catch(e => console.error('Erreur de lecture du son:', e));
+        sound.play();
       }
     }
     
-    // Désactiver les boutons après une réponse
-    const buttons = document.querySelectorAll('.futur-content button:not(#nextFutur)');
+    // Désactiver tous les boutons sauf suivant
+    const buttons = document.querySelectorAll('.game-futur button');
     console.log('Boutons trouvés:', buttons.length);
     buttons.forEach(btn => {
-      btn.disabled = true;
+      if (btn.id !== 'nextFutur') {
+        btn.disabled = true;
+      } else {
+        btn.disabled = false;
+      }
     });
     
-    // Activer le bouton suivant
-    const nextButton = document.getElementById('nextFutur');
-    if (nextButton) {
-      nextButton.disabled = false;
-    } else {
-      console.error('Bouton suivant non trouvé');
-    }
-    
+    // Mettre à jour le score
     if (window.updateScoreboard) {
       window.updateScoreboard(game);
     }
   }
-  
-  // Rendre la fonction disponible globalement
-  window.checkFutur = checkFutur;
   
   // Fonction pour charger les données du jeu futur depuis le fichier JSON
   function loadFuturData() {
@@ -321,6 +309,14 @@ document.addEventListener('DOMContentLoaded', function() {
 selectGame('roles');
 
 function selectGame(game) {
+  // Fermer le menu sur mobile/tablette
+  if (window.innerWidth <= 1024) {
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.remove('active');
+    }
+  }
+
   // Mettre à jour le menu
   document.querySelectorAll('.menu li').forEach(li => {
     li.classList.remove('active');
@@ -376,6 +372,11 @@ function updateScoreboard(game = currentGame) {
 
 function renderPhrase(game = currentGame) {
   const gameData = games[game];
+  if (!gameData || !gameData.data || !gameData.data[gameData.current]) {
+    console.error('Données manquantes pour le rendu de la phrase');
+    return;
+  }
+  
   const phraseObj = gameData.data[gameData.current];
   
   // Gérer le jeu des rôles
@@ -388,14 +389,16 @@ function renderPhrase(game = currentGame) {
     selected = null;
 
     // Remplace chaque groupe par un <span>
-    phraseObj.groupes.forEach((g, index) => {
-      const escaped = g.texte.replace(/[.*+?^${}()|\\]/g, '\\$&');
-      const pattern = new RegExp(escaped, 'i'); // ignore la casse
-      html = html.replace(
-        pattern,
-        `<span class="mot" data-role="${g.role}" data-index="${index}">${g.texte}</span>`
-      );
-    });
+    if (phraseObj.groupes && Array.isArray(phraseObj.groupes)) {
+      phraseObj.groupes.forEach((g, index) => {
+        const escaped = g.texte.replace(/[.*+?^${}()|\\]/g, '\\$&');
+        const pattern = new RegExp(escaped, 'i'); // ignore la casse
+        html = html.replace(
+          pattern,
+          `<span class="mot" data-role="${g.role}" data-index="${index}">${g.texte}</span>`
+        );
+      });
+    }
 
     const container = document.getElementById('phrase');
     container.innerHTML = html;
