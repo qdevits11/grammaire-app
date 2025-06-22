@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <button class="menu-btn" onclick="toggleMenu()">☰</button>
   <nav class="sidebar">
     <div class="logo">
       <h2>Révision Grammaire</h2>
@@ -389,6 +390,17 @@ function nextPhrase(game = currentGame) {
 
 // Fonction pour gérer le changement de jeu
 window.selectGame = selectGame;
+
+// Fonction pour gérer le menu hamburger
+function toggleMenu() {
+  const sidebar = document.querySelector('.sidebar');
+  const mainContent = document.querySelector('.main-content');
+  const menuBtn = document.querySelector('.menu-btn');
+  
+  sidebar.classList.toggle('active');
+  mainContent.classList.toggle('active');
+  menuBtn.textContent = sidebar.classList.contains('active') ? '' : '';
+}
 </script>
 </body>
 </html>
