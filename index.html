@@ -6,6 +6,16 @@
   <title>Révision Grammaire</title>
   <link rel="stylesheet" href="style.css">
   <script>
+  // Fonction pour mélanger un tableau (algorithme de Fisher-Yates)
+  function melangerTableau(tableau) {
+    const resultat = [...tableau];
+    for (let i = resultat.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [resultat[i], resultat[j]] = [resultat[j], resultat[i]];
+    }
+    return resultat;
+  }
+  
   // Définition de la fonction checkFutur en premier
   function checkFutur(answer, game = 'futur') {
     console.log('=== FONCTION checkFutur APPELÉE ===');
@@ -182,6 +192,14 @@
           réponsesCorrectes: new Set(),
           totalPoints: 0,
           totalErreurs: 0
+        },
+        definitions: {
+          data: [],
+          current: 0,
+          usedIndices: [],
+          réponsesCorrectes: new Set(),
+          totalPoints: 0,
+          totalErreurs: 0
         }
       };
       
@@ -293,6 +311,16 @@
             <span>📝 Conjugaison au futur</span>
           </a>
         </li>
+        <li>
+          <a href="#geometrie" onclick="selectGame('geometrie')">
+            <span>📐 Formes géométriques</span>
+          </a>
+        </li>
+        <li>
+          <a href="#definitions" onclick="selectGame('definitions')">
+            <span>📖 Définitions de géométrie</span>
+          </a>
+        </li>
       </ul>
     </nav>
   <main class="main-content">
@@ -355,11 +383,14 @@
         </div>
       </div>
 
-      <!-- Nouveau jeu de conjugaison au futur -->
+      <!-- Jeu de conjugaison au futur -->
       <div class="game-conjugaison" style="display: none;">
         <h1>Conjugaison au futur</h1>
         <div class="conjugaison-content">
-          <div class="conjugaison-verbe" id="conjugaison-verbe">Conjuguez le verbe : <span id="verbe-infinitif">chargement...</span></div>
+          <div class="conjugaison-header">
+            <div class="conjugaison-verbe" id="conjugaison-verbe">Conjuguez le verbe : <span id="verbe-infinitif">chargement...</span></div>
+            <div class="verbe-compteur" id="verbe-compteur">1/0</div>
+          </div>
           
           <div class="conjugaison-grid">
             <div class="conjugaison-row">
@@ -402,6 +433,76 @@
           <div id="conjugaison-feedback" class="conjugaison-feedback"></div>
         </div>
       </div>
+
+      <!-- Jeu de géométrie -->
+      <div class="game-geometrie" style="display: none;">
+        <h1>Découverte des formes géométriques</h1>
+        <p class="niveau-description">Sélectionne un niveau pour commencer à jouer !</p>
+        
+        <div class="geometrie-niveaux">
+          <button class="niveau-btn" data-niveau="polygone-ou-non">Niveau 1 : Polygone ou non ?</button>
+          <button class="niveau-btn" data-niveau="type-polygone">Niveau 2 : Type de polygone</button>
+          <button class="niveau-btn" data-niveau="quadrilateres">Niveau 3 : Les quadrilatères</button>
+          <button class="niveau-btn" data-niveau="definitions">Apprendre les définitions</button>
+        </div>
+        
+        <div class="forme-container" id="forme-container" style="display: none;">
+          <h2 id="niveau-titre"></h2>
+          <p id="niveau-description"></p>
+          
+          <div class="forme-image" id="forme-image">
+            <!-- L'image de la forme sera insérée ici par JavaScript -->
+          </div>
+          
+          <div class="reponse-boutons" id="reponse-boutons">
+            <!-- Les boutons de réponse seront générés dynamiquement -->
+          </div>
+          
+          <div class="feedback" id="feedback">
+            <p id="feedback-texte"></p>
+            <p id="explication"></p>
+          </div>
+          
+          <div class="definition" id="definition" style="display: none;">
+            <h3>Définition :</h3>
+            <p id="definition-texte"></p>
+          </div>
+          
+          <div class="actions">
+            <button class="btn btn-primary" id="btn-valider" disabled>Valider</button>
+            <button class="btn btn-primary" id="btn-suivant" style="display: none;">Forme suivante</button>
+          </div>
+        </div>
+        
+        <div id="resultats" style="text-align: center; margin-top: 20px; display: none;">
+          <h3>Résultats</h3>
+          <p>Score : <span id="score">0</span> / <span id="total">0</span></p>
+          <button class="btn btn-primary" id="recommencer">Recommencer</button>
+        </div>
+      </div>
+      
+      <!-- Début du jeu de définitions -->
+      <div id="jeu-definitions" style="display: none;">
+        <h2>Associe chaque définition à la bonne forme</h2>
+        <div class="definitions-score">
+          Score : <span id="score-definitions">0</span> / <span id="total-definitions">0</span>
+        </div>
+        <div class="definitions-container">
+          <div class="definitions-list" id="definitions-list">
+            <!-- Les définitions seront ajoutées ici dynamiquement -->
+          </div>
+          <div class="shapes-container" id="shapes-container">
+            <!-- Les formes seront ajoutées ici dynamiquement -->
+          </div>
+        </div>
+        <div class="feedback-def" id="feedback-def"></div>
+        <div class="definitions-buttons">
+          <button class="btn btn-primary" id="verifier-def">Vérifier</button>
+          <button class="btn btn-primary" id="suivant-def" style="display: none;">Définition suivante</button>
+        </div>
+      </div>
+      <!-- Fin du jeu de définitions -->
+      
     </div>
     <audio id="sound-bad" src="https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg"></audio>
   </main>
@@ -472,6 +573,24 @@ fetch('futur.json')
 
 // Ajouter les gestionnaires d'événements pour les boutons du futur
 document.addEventListener('DOMContentLoaded', function() {
+  // Charger les données du jeu de définitions
+  fetch('definitions.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erreur de chargement des définitions');
+      }
+      return response.json();
+    })
+    .then(data => {
+      window.definitionsData = data.definitions;
+      console.log('Données des définitions chargées:', window.definitionsData);
+    })
+    .catch(error => {
+      console.error('Erreur lors du chargement des définitions:', error);
+      document.getElementById('jeu-definitions').innerHTML = 
+        '<p class="error">Erreur de chargement des définitions. Veuillez recharger la page.</p>';
+    });
+    
   console.log('Ajout des gestionnaires d\'événements pour les boutons du futur');
   
   // Gestionnaire pour le bouton être
@@ -501,11 +620,25 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Bouton -ir trouvé');
     btnIr.onclick = function() { checkFutur('ir'); };
   }
+  
+  // Gestionnaire pour le bouton Vérifier du jeu de définitions
+  const btnVerifierDef = document.getElementById('verifier-def');
+  if (btnVerifierDef) {
+    btnVerifierDef.addEventListener('click', verifierReponseDefinition);
+  }
+  
+  // Gestionnaire pour le bouton Suivant du jeu de définitions
+  const btnSuivantDef = document.getElementById('suivant-def');
+  if (btnSuivantDef) {
+    btnSuivantDef.addEventListener('click', afficherDefinitionSuivante);
+  }
 });
 
 // Le chargement du jeu par défaut est maintenant géré dans startApp()
 
 function selectGame(game) {
+  console.log('Sélection du jeu:', game);
+  
   // Fermer le menu sur mobile/tablette
   if (window.innerWidth <= 1024) {
     const sidebar = document.querySelector('.sidebar');
@@ -513,45 +646,55 @@ function selectGame(game) {
       sidebar.classList.remove('active');
     }
   }
-
-  // Mettre à jour le menu
-  document.querySelectorAll('.menu li').forEach(li => {
-    li.classList.remove('active');
-    if (li.children[0].href.includes(`#${game}`)) {
-      li.classList.add('active');
-    }
+  
+  // Masquer tous les jeux
+  document.querySelectorAll('.game-content > div, #jeu-definitions').forEach(el => {
+    el.style.display = 'none';
   });
-
-  // Cacher tous les jeux
-  document.querySelectorAll('.game-content > div, .game-conjugaison').forEach(div => {
-    div.style.display = 'none';
-  });
-
+  
+  // Réinitialiser le jeu actuel
+  resetGame(game);
+  
   // Afficher le jeu sélectionné
-  const gameDiv = document.querySelector(`.game-${game}`);
-  if (gameDiv) {
-    gameDiv.style.display = 'block';
-  }
-
-  // Mettre à jour le jeu courant
-  currentGame = game;
-
-  // Charger le contenu approprié pour le jeu sélectionné
-  if (game === 'roles') {
-    renderPhrase('roles');
-  } else if (game === 'futur') {
-    renderPhrase('futur');
+  if (game === 'futur') {
+    document.querySelector('.game-futur').style.display = 'block';
+    currentGame = 'futur';
+    nextPhrase('futur');
+  } else if (game === 'roles') {
+    document.querySelector('.game-roles').style.display = 'block';
+    currentGame = 'roles';
+    nextPhrase('roles');
   } else if (game === 'temps') {
-    renderPhrase('temps');
+    document.querySelector('.game-temps').style.display = 'block';
+    currentGame = 'temps';
+    nextPhrase('temps');
   } else if (game === 'conjugaison') {
-    // Initialiser le jeu de conjugaison s'il n'est pas déjà initialisé
-    if (verbesData.length === 0) {
-      initConjugaison();
+    document.querySelector('.game-conjugaison').style.display = 'block';
+    currentGame = 'conjugaison';
+    initConjugaison();
+  } else if (game === 'geometrie') {
+    document.querySelector('.game-geometrie').style.display = 'block';
+    currentGame = 'geometrie';
+    initialiserJeuGeometrie();
+  } else if (game === 'definitions') {
+    const definitionsGame = document.getElementById('jeu-definitions');
+    if (definitionsGame) {
+      definitionsGame.style.display = 'block';
+      currentGame = 'definitions';
+      initialiserJeuDefinitions();
+    } else {
+      console.error('Élément du jeu de définitions non trouvé');
     }
   }
   
-  // Réinitialiser les scores
-  resetGame(game);
+  // Mettre à jour le menu
+  document.querySelectorAll('.sidebar a').forEach(link => {
+    link.classList.remove('active');
+  });
+  document.querySelector(`.sidebar a[onclick*="${game}"]`).classList.add('active');
+  
+  // Fermer le menu mobile si ouvert
+  document.querySelector('.sidebar').classList.remove('active');
 }
 
 function resetGame(game = currentGame) {
@@ -578,8 +721,11 @@ function resetGame(game = currentGame) {
   
   console.log('Données du jeu après réinitialisation:', gameData);
   
-  // Choisir une phrase aléatoire
-  nextPhrase(game);
+  // Ne pas appeler nextPhrase pour le jeu de définitions car il utilise sa propre logique
+  if (game !== 'definitions') {
+    // Choisir une phrase aléatoire pour les autres jeux
+    nextPhrase(game);
+  }
   
   // Mettre à jour le score
   updateScoreboard(game);
@@ -1010,7 +1156,7 @@ function toggleMenu() {
 }
 
 // Fonction utilitaire pour mélanger un tableau
-function shuffleArray(array) {
+function melangerTableau(array) {
   const newArray = [...array];
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -1018,6 +1164,9 @@ function shuffleArray(array) {
   }
   return newArray;
 }
+
+// Alias pour la compatibilité avec le code existant
+const shuffleArray = melangerTableau;
 
 // Afficher le prochain verbe à conjuguer
 function nextVerbe() {
@@ -1109,25 +1258,1179 @@ function checkConjugaison() {
   if (checkBtn) checkBtn.disabled = true;
 }
 
+// Variables globales pour le jeu de conjugaison
+let scoreConjugaison = 0;
+let totalVerbes = 0;
+
+// Variables globales pour le jeu de géométrie
+let scoreGeometrie = 0;
+let totalGeometrie = 0;
+let formeActuelle = null;
+let niveauActuel = null;
+let formes = [];
+let formesRestantes = [];
+let geometrieData = {};
+
+// Données pour le jeu de définitions
+const definitionsData = [
+  {
+    id: 'polygone',
+    terme: 'Polygone',
+    definition: 'Une surface dont tous les côtés sont droits',
+    image: 'images/geometrie/pentagone.svg',
+    reponses: [
+      'Une surface dont tous les côtés sont droits',
+      'Un polygone à 4 côtés',
+      'Une figure avec des courbes'
+    ]
+  },
+  {
+    id: 'quadrilatere',
+    terme: 'Quadrilatère',
+    definition: 'Un polygone à 4 côtés',
+    image: 'images/geometrie/rectangle.svg',
+    reponses: [
+      'Un polygone à 4 côtés',
+      'Un polygone à 3 côtés',
+      'Un polygone à 5 côtés'
+    ]
+  },
+  {
+    id: 'triangle',
+    terme: 'Triangle',
+    definition: 'Un polygone à 3 côtés',
+    image: 'images/geometrie/triangle.svg',
+    reponses: [
+      'Un polygone à 3 côtés',
+      'Un polygone à 4 côtés',
+      'Un polygone à 5 côtés'
+    ]
+  },
+  {
+    id: 'pentagone',
+    terme: 'Pentagone',
+    definition: 'Un polygone à 5 côtés',
+    image: 'images/geometrie/pentagone.svg',
+    reponses: [
+      'Un polygone à 5 côtés',
+      'Un polygone à 4 côtés',
+      'Un polygone à 6 côtés'
+    ]
+  },
+  {
+    id: 'hexagone',
+    terme: 'Hexagone',
+    definition: 'Un polygone à 6 côtés',
+    image: 'images/geometrie/hexagone.svg',
+    reponses: [
+      'Un polygone à 6 côtés',
+      'Un polygone à 5 côtés',
+      'Un polygone à 4 côtés'
+    ]
+  },
+  {
+    id: 'octogone',
+    terme: 'Octogone',
+    definition: 'Un polygone à 8 côtés',
+    image: 'images/geometrie/octogone.svg',
+    reponses: [
+      'Un polygone à 8 côtés',
+      'Un polygone à 6 côtés',
+      'Un polygone à 10 côtés'
+    ]
+  },
+  {
+    id: 'cercle',
+    terme: 'Cercle',
+    definition: 'Une figure plane dont tous les points sont à égale distance d\'un point central appelé centre',
+    image: 'images/geometrie/cercle.svg',
+    reponses: [
+      'Une figure plane dont tous les points sont à égale distance d\'un point central appelé centre',
+      'Un polygone à 4 côtés égaux',
+      'Un polygone à 3 côtés'
+    ]
+  },
+  {
+    id: 'carre',
+    terme: 'Carré',
+    definition: 'Un quadrilatère qui a 4 côtés isométriques et 4 angles droits',
+    image: 'images/geometrie/carre.svg',
+    reponses: [
+      'Un quadrilatère qui a 4 côtés isométriques et 4 angles droits',
+      'Un quadrilatère avec 2 paires de côtés parallèles',
+      'Un polygone à 6 côtés'
+    ]
+  },
+  {
+    id: 'rectangle',
+    terme: 'Rectangle',
+    definition: 'Un quadrilatère qui a 4 angles droits et des côtés opposés de même longueur',
+    image: 'images/geometrie/rectangle.svg',
+    reponses: [
+      'Un quadrilatère qui a 4 angles droits et des côtés opposés de même longueur',
+      'Un quadrilatère avec 4 côtés égaux',
+      'Un polygone à 3 côtés'
+    ]
+  },
+  {
+    id: 'losange',
+    terme: 'Losange',
+    definition: 'Un quadrilatère qui a 4 côtés de même longueur et des côtés opposés parallèles',
+    image: 'images/geometrie/losange.svg',
+    reponses: [
+      'Un quadrilatère qui a 4 côtés de même longueur et des côtés opposés parallèles',
+      'Un quadrilatère avec 4 angles droits',
+      'Un polygone à 5 côtés'
+    ]
+  },
+  {
+    id: 'parallelogramme',
+    terme: 'Parallélogramme',
+    definition: 'Un quadrilatère dont les côtés opposés sont parallèles et de même longueur',
+    image: 'images/geometrie/parallelogramme.svg',
+    reponses: [
+      'Un quadrilatère dont les côtés opposés sont parallèles et de même longueur',
+      'Un quadrilatère avec 4 angles droits',
+      'Un polygone à 5 côtés égaux'
+    ]
+  },
+  {
+    id: 'trapeze',
+    terme: 'Trapèze',
+    definition: 'Un quadrilatère qui a au moins une paire de côtés parallèles',
+    image: 'images/geometrie/trapeze.svg',
+    reponses: [
+      'Un quadrilatère qui a au moins une paire de côtés parallèles',
+      'Un quadrilatère avec 4 côtés égaux',
+      'Un polygone à 3 côtés'
+    ]
+  },
+  {
+    id: 'triangle-equilateral',
+    terme: 'Triangle équilatéral',
+    definition: 'Un triangle qui a ses trois côtés de même longueur',
+    image: 'images/geometrie/triangle-equilateral.svg',
+    reponses: [
+      'Un triangle qui a ses trois côtés de même longueur',
+      'Un triangle avec deux côtés égaux',
+      'Un triangle avec un angle droit'
+    ]
+  },
+  {
+    id: 'triangle-isocele',
+    terme: 'Triangle isocèle',
+    definition: 'Un triangle qui a deux côtés de même longueur',
+    image: 'images/geometrie/triangle-isocele.svg',
+    reponses: [
+      'Un triangle qui a deux côtés de même longueur',
+      'Un triangle avec trois côtés égaux',
+      'Un triangle avec un angle obtus'
+    ]
+  },
+  {
+    id: 'triangle-rectangle',
+    terme: 'Triangle rectangle',
+    definition: 'Un triangle qui a un angle droit',
+    image: 'images/geometrie/triangle-rectangle.svg',
+    reponses: [
+      'Un triangle qui a un angle droit',
+      'Un triangle avec trois côtés égaux',
+      'Un triangle avec un angle obtus'
+    ]
+  },
+  {
+    id: 'triangle-quelconque',
+    terme: 'Triangle quelconque',
+    definition: 'Un triangle qui n\'a pas de propriétés particulières',
+    image: 'images/geometrie/triangle-quelconque.svg',
+    reponses: [
+      'Un triangle qui n\'a pas de propriétés particulières',
+      'Un triangle avec trois côtés égaux',
+      'Un triangle avec un angle droit'
+    ]
+  },
+  {
+    id: 'disque',
+    terme: 'Disque',
+    definition: 'La surface délimitée par un cercle',
+    image: 'images/geometrie/disque.svg',
+    reponses: [
+      'La surface délimitée par un cercle',
+      'La ligne qui forme un cercle',
+      'Un demi-cercle'
+    ]
+  },
+  {
+    id: 'ovale',
+    terme: 'Ovale',
+    definition: 'Une forme arrondie allongée qui ressemble à un œuf',
+    image: 'images/geometrie/ovale.svg',
+    reponses: [
+      'Une forme arrondie allongée qui ressemble à un œuf',
+      'Un cercle parfait',
+      'Un demi-cercle'
+    ]
+  },
+  {
+    id: 'demi-cercle',
+    terme: 'Demi-cercle',
+    definition: 'La moitié d\'un cercle, délimitée par un diamètre et un demi-périmètre',
+    image: 'images/geometrie/demi-cercle.svg',
+    reponses: [
+      'La moitié d\'un cercle, délimitée par un diamètre et un demi-périmètre',
+      'Un cercle complet',
+      'Un quart de cercle'
+    ]
+  },
+  {
+    id: 'secteur-circulaire',
+    terme: 'Secteur circulaire',
+    definition: 'Une portion de disque délimitée par deux rayons et un arc de cercle',
+    image: 'images/geometrie/secteur-circulaire.svg',
+    reponses: [
+      'Une portion de disque délimitée par deux rayons et un arc de cercle',
+      'La moitié d\'un cercle',
+      'Un quart de cercle'
+    ]
+  },
+  {
+    id: 'segment-circulaire',
+    terme: 'Segment circulaire',
+    definition: 'La portion de disque comprise entre un arc de cercle et la corde qui le sous-tend',
+    image: 'images/geometrie/segment-circulaire.svg',
+    reponses: [
+      'La portion de disque comprise entre un arc de cercle et la corde qui le sous-tend',
+      'La moitié d\'un cercle',
+      'Un secteur angulaire'
+    ]
+  },
+  {
+    id: 'couronne-circulaire',
+    terme: 'Couronne circulaire',
+    definition: 'La surface comprise entre deux cercles concentriques',
+    image: 'images/geometrie/couronne-circulaire.svg',
+    reponses: [
+      'La surface comprise entre deux cercles concentriques',
+      'Un demi-cercle',
+      'Un secteur angulaire'
+    ]
+  },
+  {
+    id: 'ellipse',
+    terme: 'Ellipse',
+    definition: 'Une courbe plane fermée qui ressemble à un cercle allongé',
+    image: 'images/geometrie/ellipse.svg',
+    reponses: [
+      'Une courbe plane fermée qui ressemble à un cercle allongé',
+      'Un cercle parfait',
+      'Une parabole'
+    ]
+  },
+  {
+    id: 'parabole',
+    terme: 'Parabole',
+    definition: 'Une courbe plane symétrique dont chaque point est à égale distance d\'un point fixe (foyer) et d\'une droite fixe (directrice)',
+    image: 'images/geometrie/parabole.svg',
+    reponses: [
+      'Une courbe plane symétrique dont chaque point est à égale distance d\'un point fixe et d\'une droite fixe',
+      'Un cercle',
+      'Une ellipse'
+    ]
+  },
+  {
+    id: 'hyperbole',
+    terme: 'Hyperbole',
+    definition: 'Une courbe plane ouverte à deux branches, obtenue par l\'intersection d\'un cône avec un plan parallèle à son axe',
+    image: 'images/geometrie/hyperbole.svg',
+    reponses: [
+      'Une courbe plane ouverte à deux branches, obtenue par l\'intersection d\'un cône avec un plan parallèle à son axe',
+      'Une parabole',
+      'Une ellipse'
+    ]
+  },
+  {
+    id: 'spirale',
+    terme: 'Spirale',
+    definition: 'Une courbe plane qui tourne autour d\'un point central en s\'en éloignant de plus en plus',
+    image: 'images/geometrie/spirale.svg',
+    reponses: [
+      'Une courbe plane qui tourne autour d\'un point central en s\'en éloignant de plus en plus',
+      'Un cercle',
+      'Une parabole'
+    ]
+  },
+  {
+    id: 'parallelogramme',
+    terme: 'Parallélogramme',
+    definition: 'Un quadrilatère qui a 2 paires de côtés parallèles',
+    image: 'images/geometrie/parallelogramme.svg',
+    reponses: [
+      'Un quadrilatère qui a 1 paire de côtés parallèles',
+      'Un quadrilatère qui a 2 paires de côtés parallèles',
+      'Un quadrilatère avec 4 angles droits'
+    ]
+  },
+  {
+    id: 'trapeze',
+    terme: 'Trapèze',
+    definition: 'Un quadrilatère qui a 1 paire de côtés parallèles',
+    image: 'images/geometrie/trapeze.svg',
+    reponses: [
+      'Un quadrilatère avec 4 côtés égaux',
+      'Un quadrilatère qui a 1 paire de côtés parallèles',
+      'Un polygone à 3 côtés'
+    ]
+  },
+  {
+    id: 'rectangle',
+    terme: 'Rectangle',
+    definition: 'Un quadrilatère qui a 4 angles droits',
+    image: 'images/geometrie/rectangle.svg',
+    reponses: [
+      'Un quadrilatère avec 4 côtés égaux',
+      'Un quadrilatère qui a 4 angles droits',
+      'Un polygone à 5 côtés'
+    ]
+  },
+  {
+    id: 'carre',
+    terme: 'Carré',
+    definition: 'Un quadrilatère avec quatre côtés égaux et quatre angles droits',
+    image: 'images/geometrie/carre.svg',
+    reponses: [
+      'Un quadrilatère avec 4 côtés égaux et 4 angles droits',
+      'Un quadrilatère avec 2 paires de côtés égaux',
+      'Un polygone à 5 côtés égaux'
+    ]
+  },
+  {
+    id: 'triangle',
+    terme: 'Triangle',
+    definition: 'Un polygone à trois côtés et trois angles',
+    image: 'images/geometrie/triangle.svg',
+    reponses: [
+      'Un polygone à trois côtés',
+      'Un polygone à quatre côtés',
+      'Un polygone à cinq côtés'
+    ]
+  },
+  {
+    id: 'cercle',
+    terme: 'Cercle',
+    definition: 'Une figure plane dont tous les points sont à égale distance d\'un point central',
+    image: 'images/geometrie/cercle.svg',
+    reponses: [
+      'Figure dont tous les points sont à égale distance du centre',
+      'Figure à quatre côtés égaux',
+      'Figure à trois côtés',
+      'Figure à cinq côtés'
+    ]
+  },
+  {
+    id: 'rectangle',
+    terme: 'rectangle',
+    definition: 'Un quadrilatère avec quatre angles droits et des côtés opposés de même longueur.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Rectangle_Geometry_Vector.svg/1200px-Rectangle_Geometry_Vector.svg.png',
+    reponses: [
+      'Quadrilatère avec quatre angles droits et côtés opposés égaux',
+      'Figure à trois côtés',
+      'Figure ronde',
+      'Figure à six côtés égaux'
+    ]
+  },
+  {
+    terme: 'losange',
+    definition: 'Un quadrilatère dont les quatre côtés sont de même longueur et dont les côtés opposés sont parallèles.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Rhombus_1.svg/1200px-Rhombus_1.svg.png',
+    reponses: [
+      'Quadrilatère avec quatre côtés égaux et côtés opposés parallèles',
+      'Figure à trois côtés égaux',
+      'Figure à quatre angles droits',
+      'Figure à cinq côtés'
+    ]
+  },
+  {
+    terme: 'parallélogramme',
+    definition: 'Un quadrilatère dont les côtés opposés sont parallèles et de même longueur.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Parallelogram_geometry.png/1200px-Parallelogram_geometry.png',
+    reponses: [
+      'Quadrilatère avec côtés opposés parallèles et de même longueur',
+      'Figure à trois côtés',
+      'Figure ronde',
+      'Figure à six côtés égaux'
+    ]
+  },
+  {
+    terme: 'trapèze',
+    definition: 'Un quadrilatère qui a au moins une paire de côtés parallèles.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Trapezoid_%28trapezium%29.svg/1200px-Trapezoid_%28trapezium%29.svg.png',
+    reponses: [
+      'Quadrilatère avec au moins une paire de côtés parallèles',
+      'Figure à trois côtés',
+      'Figure à quatre côtés égaux',
+      'Figure ronde'
+    ]
+  },
+  {
+    terme: 'pentagone',
+    definition: 'Un polygone à cinq côtés et cinq angles.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Pentagon.svg/1200px-Pentagon.svg.png',
+    reponses: [
+      'Polygone à cinq côtés et cinq angles',
+      'Figure à trois côtés',
+      'Figure à quatre côtés égaux',
+      'Figure ronde'
+    ]
+  },
+  {
+    terme: 'hexagone',
+    definition: 'Un polygone à six côtés et six angles.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Regular_hexagon.svg/1200px-Regular_hexagon.svg.png',
+    reponses: [
+      'Polygone à six côtés et six angles',
+      'Figure à cinq côtés',
+      'Figure à quatre côtés égaux',
+      'Figure à trois côtés'
+    ]
+  },
+  {
+    terme: 'octogone',
+    definition: 'Un polygone à huit côtés et huit angles.',
+    image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Regular_octagon.svg/1200px-Regular_octagon.svg.png',
+    reponses: [
+      'Polygone à huit côtés et huit angles',
+      'Figure à six côtés',
+      'Figure à cinq côtés',
+      'Figure à quatre côtés égaux'
+    ]
+  }
+];
+
+// Variables d'état pour le jeu de définitions
+let definitionsRestantes = [];
+let definitionActuelle = null;
+let reponsesMelangees = [];
+let reponseCorrecte = '';
+let reponseSelectionnee = '';
+let scoreDefinitions = 0;
+let totalDefinitions = 0;
+
+// Initialiser le jeu de définitions
+function initialiserJeuDefinitions() {
+  // Copier toutes les définitions
+  definitionsRestantes = [...definitionsData];
+  scoreDefinitions = 0;
+  totalDefinitions = definitionsData.length;
+  
+  // Mélanger les définitions
+  definitionsRestantes = melangerTableau(definitionsRestantes);
+  
+  // Afficher la première définition
+  afficherDefinitionSuivante();
+  
+  // Mettre à jour le score
+  document.getElementById('score-definitions').textContent = scoreDefinitions;
+  document.getElementById('total-definitions').textContent = totalDefinitions;
+}
+
+// Afficher une définition aléatoire
+function afficherDefinitionSuivante() {
+  const definitionsList = document.getElementById('definitions-list');
+  const shapesContainer = document.getElementById('shapes-container');
+  const feedbackDef = document.getElementById('feedback-def');
+  
+  // Réinitialiser la réponse sélectionnée
+  reponseSelectionnee = '';
+  
+  // Réinitialiser l'interface
+  definitionsList.innerHTML = '';
+  shapesContainer.innerHTML = '';
+  feedbackDef.textContent = '';
+  feedbackDef.className = 'feedback-def';
+  document.getElementById('verifier-def').style.display = 'inline-block';
+  document.getElementById('suivant-def').style.display = 'none';
+  
+  // Vérifier s'il reste des définitions
+  if (definitionsRestantes.length === 0) {
+    // Toutes les définitions ont été vues
+    definitionsList.innerHTML = '<div class="feedback correct">Félicitations ! Vous avez terminé toutes les définitions. Score final : ' + scoreDefinitions + ' / ' + totalDefinitions + '</div>';
+    document.getElementById('verifier-def').style.display = 'none';
+    document.getElementById('suivant-def').style.display = 'none';
+    return;
+  }
+  
+  // Prendre la première définition de la liste
+  definitionActuelle = definitionsRestantes.shift();
+  
+  // Mélanger les réponses
+  reponsesMelangees = melangerTableau([...definitionActuelle.reponses]);
+  reponseCorrecte = definitionActuelle.definition;
+  
+  // Afficher le terme à définir
+  const termeElement = document.createElement('h3');
+  termeElement.textContent = `Quelle est la définition d'un ${definitionActuelle.terme} ?`;
+  definitionsList.appendChild(termeElement);
+  
+  // Afficher les réponses possibles
+  reponsesMelangees.forEach((reponse, index) => {
+    const reponseElement = document.createElement('div');
+    reponseElement.className = 'definition-item';
+    reponseElement.textContent = reponse;
+    reponseElement.setAttribute('data-reponse', reponse);
+    reponseElement.setAttribute('draggable', 'true');
+    
+    // Gestion du glisser-déposer
+    reponseElement.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', reponse);
+      reponseElement.classList.add('dragging');
+    });
+    
+    reponseElement.addEventListener('dragend', () => {
+      reponseElement.classList.remove('dragging');
+    });
+    
+    // Gestion du clic
+    reponseElement.addEventListener('click', () => {
+      document.querySelectorAll('.definition-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      reponseElement.classList.add('selected');
+      reponseSelectionnee = reponse;
+    });
+    
+    definitionsList.appendChild(reponseElement);
+  });
+  
+  // Configurer la zone de dépôt
+  const shapeTarget = document.createElement('div');
+  shapeTarget.className = 'shape-target';
+  shapeTarget.innerHTML = `
+    <img src="${definitionActuelle.image}" alt="${definitionActuelle.terme}">
+    <p>Déposez la définition ici</p>
+  `;
+  
+  // Gestion des événements de glisser-déposer
+  shapeTarget.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    shapeTarget.classList.add('highlight');
+  });
+  
+  shapeTarget.addEventListener('dragleave', () => {
+    shapeTarget.classList.remove('highlight');
+  });
+  
+  shapeTarget.addEventListener('drop', (e) => {
+    e.preventDefault();
+    shapeTarget.classList.remove('highlight');
+    
+    const reponse = e.dataTransfer.getData('text/plain');
+    reponseSelectionnee = reponse;
+    
+    // Mettre en surbrillance la réponse sélectionnée
+    document.querySelectorAll('.definition-item').forEach(item => {
+      item.classList.remove('selected');
+      if (item.textContent === reponse) {
+        item.classList.add('selected');
+      }
+    });
+    
+    // Afficher la réponse dans la zone de dépôt
+    shapeTarget.innerHTML = `
+      <img src="${definitionActuelle.image}" alt="${definitionActuelle.terme}">
+      <p>${reponse}</p>
+    `;
+  });
+  
+  shapesContainer.appendChild(shapeTarget);
+}
+
+// Vérifier la réponse sélectionnée
+function verifierReponseDefinition() {
+  const feedbackDef = document.getElementById('feedback-def');
+  const shapeTarget = document.querySelector('.shape-target');
+  const verifierBtn = document.getElementById('verifier-def');
+  const suivantBtn = document.getElementById('suivant-def');
+  
+  if (!reponseSelectionnee) {
+    feedbackDef.textContent = 'Veuillez sélectionner une réponse.';
+    feedbackDef.className = 'feedback-def incorrect';
+    feedbackDef.style.display = 'block';
+    return;
+  }
+  
+  const estCorrect = reponseSelectionnee === reponseCorrecte;
+  
+  if (estCorrect) {
+    scoreDefinitions++;
+    feedbackDef.textContent = 'Correct ! ' + definitionActuelle.definition;
+    feedbackDef.className = 'feedback-def correct';
+    shapeTarget.classList.add('correct');
+  } else {
+    feedbackDef.innerHTML = `Incorrect. La bonne réponse était : <strong>${reponseCorrecte}</strong>`;
+    feedbackDef.className = 'feedback-def incorrect';
+    shapeTarget.classList.add('incorrect');
+  }
+  
+  // Mettre à jour le score
+  document.getElementById('score-definitions').textContent = scoreDefinitions;
+  
+  // Changer les boutons
+  verifierBtn.style.display = 'none';
+  suivantBtn.style.display = 'inline-block';
+  
+  // Désactiver le glisser-déposer
+  document.querySelectorAll('.definition-item').forEach(item => {
+    item.setAttribute('draggable', 'false');
+  });
+}
+
+// Charger les données de géométrie
+function chargerDonneesGeometrie() {
+  return fetch('geometrie.json')
+    .then(response => response.json())
+    .then(data => {
+      geometrieData = data;
+      return data;
+    })
+    .catch(error => {
+      console.error('Erreur lors du chargement des données de géométrie :', error);
+      throw error;
+    });
+}
+
+// Afficher le verbe actuel à conjuguer
+function afficherVerbeActuel() {
+  if (!verbesData || verbesData.length === 0) {
+    console.error('Aucun verbe disponible');
+    return;
+  }
+  
+  const verbe = verbesData[currentVerbeIndex];
+  document.getElementById('verbe-infinitif').textContent = verbe.infinitif;
+  
+  // Réinitialiser les champs de saisie et les retours visuels
+  ['je', 'tu', 'il', 'nous', 'vous', 'ils'].forEach(personne => {
+    document.getElementById(`conj-${personne}`).value = '';
+    document.getElementById(`result-${personne}`).textContent = '';
+    document.getElementById(`result-${personne}`).className = 'conjugaison-result';
+  });
+  
+  // Activer tous les champs de saisie
+  document.querySelectorAll('.conjugaison-input').forEach(input => {
+    input.disabled = false;
+  });
+  
+  // Réinitialiser le feedback
+  document.getElementById('conjugaison-feedback').textContent = '';
+  document.getElementById('conjugaison-feedback').className = 'conjugaison-feedback';
+  
+  // Mettre à jour le compteur
+  document.getElementById('verbe-compteur').textContent = `${currentVerbeIndex + 1} / ${totalVerbes}`;
+}
+
 // Initialiser le jeu de conjugaison
-async function initConjugaison() {
-  try {
-    const response = await fetch('futur-conjugaison.json');
-    const data = await response.json();
-    verbesData = data.verbes;
-    // Mélanger les verbes pour plus de variété
-    verbesData = shuffleArray([...verbesData]);
-    // Charger le premier verbe
-    nextVerbe();
-  } catch (error) {
-    console.error('Erreur lors du chargement des verbes:', error);
-    const element = document.getElementById('conjugaison-verbe');
-    if (element) element.textContent = 'Erreur de chargement des verbes';
+function initConjugaison() {
+  fetch('futur-conjugaison.json')
+    .then(response => response.json())
+    .then(data => {
+      verbesData = data.verbes;
+      totalVerbes = verbesData.length;
+      currentVerbeIndex = 0;
+      afficherVerbeActuel();
+      document.getElementById('score-conjugaison').textContent = scoreConjugaison;
+      document.getElementById('total-verbes').textContent = totalVerbes;
+      
+      // Ajouter l'écouteur pour le bouton de vérification
+      document.getElementById('check-conjugaison').addEventListener('click', verifierConjugaison);
+      
+      // Ajouter l'écouteur pour le bouton suivant
+      document.getElementById('next-conjugaison').addEventListener('click', () => {
+        currentVerbeIndex = (currentVerbeIndex + 1) % verbesData.length;
+        afficherVerbeActuel();
+      });
+    })
+    .catch(error => {
+      console.error('Erreur lors du chargement des verbes :', error);
+      document.getElementById('conjugaison-feedback').innerHTML = 'Erreur lors du chargement des verbes. Veuillez réessayer.';
+    });
+}
+
+// Vérifier les réponses de conjugaison
+function verifierConjugaison() {
+  if (!verbesData || currentVerbeIndex >= verbesData.length) return;
+  
+  const verbe = verbesData[currentVerbeIndex];
+  let toutesCorrectes = true;
+  
+  // Vérifier chaque personne
+  ['je', 'tu', 'il', 'nous', 'vous', 'ils'].forEach(personne => {
+    const reponse = document.getElementById(`conj-${personne}`).value.trim().toLowerCase();
+    const reponseCorrecte = verbe[`${personne}_futur`].toLowerCase();
+    const resultElement = document.getElementById(`result-${personne}`);
+    
+    if (reponse === reponseCorrecte) {
+      resultElement.textContent = '✓';
+      resultElement.className = 'conjugaison-result correct';
+    } else {
+      resultElement.textContent = reponseCorrecte;
+      resultElement.className = 'conjugaison-result incorrect';
+      toutesCorrectes = false;
+    }
+  });
+  
+  // Mettre à jour le score
+  if (toutesCorrectes) {
+    scoreConjugaison++;
+    document.getElementById('score-conjugaison').textContent = scoreConjugaison;
+    document.getElementById('conjugaison-feedback').textContent = 'Bravo ! Toutes les réponses sont correctes !';
+    document.getElementById('conjugaison-feedback').className = 'conjugaison-feedback success';
+  } else {
+    document.getElementById('conjugaison-feedback').textContent = 'Certaines réponses sont incorrectes. Corrigez-les et réessayez.';
+    document.getElementById('conjugaison-feedback').className = 'conjugaison-feedback error';
+  }
+  
+  // Activer le bouton suivant
+  document.getElementById('next-conjugaison').disabled = false;
+}
+
+// Fonction pour charger les données de géométrie
+function chargerDonneesGeometrie() {
+  return fetch('geometrie.json')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Erreur de chargement des données de géométrie');
+      }
+      return response.json();
+    })
+    .then(data => {
+      window.geometrieData = data;
+      console.log('Données de géométrie chargées:', window.geometrieData);
+      return data;
+    })
+    .catch(error => {
+      console.error('Erreur lors du chargement des données de géométrie:', error);
+      document.getElementById('jeu-geometrie').innerHTML = 
+        '<p class="error">Erreur de chargement des données de géométrie. Veuillez recharger la page.</p>';
+      throw error; // Propager l'erreur
+    });
+}
+
+// Initialisation du jeu de définitions de géométrie
+function initialiserJeuDefinitions() {
+  console.log('Initialisation du jeu de définitions');
+  
+  // Vérifier que les données sont disponibles
+  if (!window.definitionsData || !Array.isArray(window.definitionsData) || window.definitionsData.length === 0) {
+    console.error('Aucune donnée de définition disponible');
+    document.getElementById('feedback-def').textContent = 'Erreur : Aucune donnée de définition disponible';
+    return;
+  }
+  
+  // Initialiser les variables du jeu
+  window.definitionsRestantes = [...window.definitionsData];
+  window.definitionActuelle = null;
+  window.reponsesMelangees = [];
+  window.reponseCorrecte = '';
+  window.reponseSelectionnee = null;
+  window.scoreDefinitions = 0;
+  window.totalDefinitions = window.definitionsData.length;
+  
+  // Mélanger les définitions
+  window.definitionsRestantes = melangerTableau(window.definitionsRestantes);
+  
+  // Afficher la première définition
+  afficherDefinitionSuivante();
+  
+  // Mettre à jour le score
+  document.getElementById('score-definitions').textContent = window.scoreDefinitions;
+  document.getElementById('total-definitions').textContent = window.totalDefinitions;
+  
+  // Ajouter les écouteurs d'événements
+  document.getElementById('verifier-def').addEventListener('click', verifierReponseDefinition);
+  document.getElementById('suivant-def').addEventListener('click', afficherDefinitionSuivante);
+  
+  console.log('Jeu de définitions initialisé avec', window.definitionsRestantes.length, 'définitions');
+}
+
+// Afficher la définition suivante
+function afficherDefinitionSuivante() {
+  console.log('Affichage de la définition suivante');
+  
+  // Réinitialiser l'interface
+  document.getElementById('definitions-list').innerHTML = '';
+  document.getElementById('shapes-container').innerHTML = '';
+  document.getElementById('feedback-def').textContent = '';
+  document.getElementById('verifier-def').style.display = 'inline-block';
+  document.getElementById('suivant-def').style.display = 'none';
+  
+  // Vérifier s'il reste des définitions
+  if (window.definitionsRestantes.length === 0) {
+    // Toutes les définitions ont été affichées
+    document.getElementById('definitions-list').innerHTML = '<p>Félicitations ! Vous avez terminé toutes les définitions.</p>';
+    document.getElementById('verifier-def').style.display = 'none';
+    document.getElementById('suivant-def').style.display = 'none';
+    return;
+  }
+  
+  // Prendre la prochaine définition
+  window.definitionActuelle = window.definitionsRestantes.pop();
+  
+  // Afficher la définition
+  const definitionElement = document.createElement('div');
+  definitionElement.className = 'definition-item';
+  definitionElement.textContent = window.definitionActuelle.definition;
+  document.getElementById('definitions-list').appendChild(definitionElement);
+  
+  // Mélanger les réponses
+  window.reponsesMelangees = melangerTableau([...window.definitionActuelle.termes]);
+  window.reponseCorrecte = window.definitionActuelle.termeCorrect;
+  
+  // Afficher les formes (réponses possibles)
+  window.reponsesMelangees.forEach((terme, index) => {
+    const shapeElement = document.createElement('div');
+    shapeElement.className = 'shape-item';
+    shapeElement.dataset.terme = terme;
+    shapeElement.innerHTML = `
+      <img src="images/geometrie/${terme}.svg" alt="${terme}" class="shape-image">
+      <div class="shape-name">${terme}</div>
+    `;
+    
+    // Ajouter un écouteur d'événements pour la sélection
+    shapeElement.addEventListener('click', () => {
+      document.querySelectorAll('.shape-item').forEach(item => {
+        item.classList.remove('selected');
+      });
+      shapeElement.classList.add('selected');
+      window.reponseSelectionnee = terme;
+    });
+    
+    document.getElementById('shapes-container').appendChild(shapeElement);
+  });
+  
+  console.log('Définition affichée :', window.definitionActuelle);
+}
+
+// Vérifier la réponse sélectionnée
+function verifierReponseDefinition() {
+  console.log('Vérification de la réponse');
+  
+  if (!window.reponseSelectionnee) {
+    document.getElementById('feedback-def').textContent = 'Veuillez sélectionner une réponse';
+    document.getElementById('feedback-def').style.color = 'red';
+    return;
+  }
+  
+  const feedbackElement = document.getElementById('feedback-def');
+  
+  if (window.reponseSelectionnee === window.reponseCorrecte) {
+    // Bonne réponse
+    window.scoreDefinitions++;
+    feedbackElement.textContent = 'Bravo ! Bonne réponse !';
+    feedbackElement.style.color = 'green';
+    document.getElementById('score-definitions').textContent = window.scoreDefinitions;
+  } else {
+    // Mauvaise réponse
+    feedbackElement.textContent = `Incorrect. La bonne réponse était : ${window.reponseCorrecte}`;
+    feedbackElement.style.color = 'red';
+  }
+  
+  // Mettre à jour l'interface
+  document.getElementById('verifier-def').style.display = 'none';
+  document.getElementById('suivant-def').style.display = 'inline-block';
+  
+  // Mettre en évidence la bonne réponse
+  document.querySelectorAll('.shape-item').forEach(item => {
+    if (item.dataset.terme === window.reponseCorrecte) {
+      item.classList.add('correct-answer');
+    }
+  });
+}
+
+// Initialisation du jeu de géométrie
+function initialiserJeuGeometrie() {
+  // Charger les données de géométrie
+  chargerDonneesGeometrie().then(() => {
+    // Ajouter les écouteurs d'événements pour les boutons de niveau
+    document.querySelectorAll('.niveau-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const niveauId = btn.getAttribute('data-niveau');
+        demarrerNiveau(niveauId);
+      });
+    });
+    
+    // Ajouter les écouteurs d'événements pour les boutons d'action
+    document.getElementById('btn-valider').addEventListener('click', validerReponse);
+    document.getElementById('btn-suivant').addEventListener('click', afficherFormeSuivante);
+    document.getElementById('recommencer').addEventListener('click', recommencerNiveau);
+  });
+}
+
+// Démarrer un niveau spécifique
+function demarrerNiveau(niveauId) {
+  if (!window.geometrieData || !window.geometrieData.niveaux) {
+    console.error('Données de géométrie non chargées');
+    return;
+  }
+  
+  niveauActuel = JSON.parse(JSON.stringify(window.geometrieData.niveaux.find(n => n.id === niveauId)));
+  if (!niveauActuel) {
+    console.error('Niveau non trouvé :', niveauId);
+    return;
+  }
+  
+  // Mélanger les formes pour ce niveau
+  niveauActuel.formes = melangerTableau(niveauActuel.formes);
+  
+  // Mettre à jour l'interface
+  document.getElementById('niveau-titre').textContent = niveauActuel.nom;
+  document.getElementById('niveau-description').textContent = niveauActuel.description;
+  document.getElementById('forme-container').style.display = 'block';
+  document.querySelector('.niveau-description').style.display = 'none';
+  document.getElementById('resultats').style.display = 'none';
+  
+  // Réinitialiser les variables du jeu
+  scoreGeometrie = 0;
+  formesJouees = [];
+  totalFormes = niveauActuel.formes.length;
+  
+  // Afficher la première forme
+  afficherFormeAleatoire();
+}
+
+// Afficher une forme aléatoire
+function afficherFormeAleatoire() {
+  // Réinitialiser l'interface
+  document.getElementById('feedback').style.display = 'none';
+  document.getElementById('btn-valider').disabled = true;
+  document.getElementById('btn-suivant').style.display = 'none';
+  document.getElementById('definition').style.display = 'none';
+  
+  // Choisir une forme aléatoire qui n'a pas encore été jouée
+  const formesDisponibles = niveauActuel.formes.filter((_, index) => !formesJouees.includes(index));
+  
+  if (formesDisponibles.length === 0) {
+    // Toutes les formes ont été jouées
+    afficherResultats();
+    return;
+  }
+  
+  const formeIndex = Math.floor(Math.random() * formesDisponibles.length);
+  formeActuelle = formesDisponibles[formeIndex];
+  formesJouees.push(niveauActuel.formes.indexOf(formeActuelle));
+  
+  // Mettre à jour l'image de la forme
+  const formeImage = document.getElementById('forme-image');
+  formeImage.innerHTML = `<img src="images/geometrie/${formeActuelle.image}" alt="${formeActuelle.type || 'Forme géométrique'}">`;
+  
+  // Mettre à jour les boutons de réponse
+  const reponsesContainer = document.getElementById('reponse-boutons');
+  reponsesContainer.innerHTML = '';
+  
+  // Déterminer les réponses possibles en fonction du niveau
+  let reponses = [];
+  
+  if (niveauActuel.id === 'polygone-ou-non') {
+    reponses = ['Polygone', 'Non-polygone'];
+  } else if (niveauActuel.id === 'type-polygone') {
+    reponses = ['Triangle', 'Quadrilatère'];
+  } else if (niveauActuel.id === 'quadrilateres') {
+    reponses = ['Trapèze', 'Parallélogramme', 'Rectangle', 'Carré'];
+  }
+  
+  // Créer les boutons de réponse
+  reponses.forEach(reponse => {
+    const btn = document.createElement('button');
+    btn.className = 'reponse-btn';
+    btn.textContent = reponse;
+    btn.addEventListener('click', () => {
+      // Désélectionner tous les boutons
+      document.querySelectorAll('.reponse-btn').forEach(b => b.classList.remove('selected'));
+      // Sélectionner le bouton cliqué
+      btn.classList.add('selected');
+      reponseSelectionnee = reponse;
+      // Valider automatiquement la réponse
+      validerReponse();
+    });
+    reponsesContainer.appendChild(btn);
+  });
+  
+  // Réinitialiser la sélection
+  reponseSelectionnee = null;
+  
+  // Cacher le bouton Valider puisqu'on valide automatiquement
+  document.getElementById('btn-valider').style.display = 'none';
+}
+
+// Valider la réponse sélectionnée
+function validerReponse() {
+  // Vérifier s'il y a une réponse sélectionnée
+  if (reponseSelectionnee === null) return;
+  
+  const reponse = reponseSelectionnee;
+  
+  const feedback = document.getElementById('feedback');
+  const feedbackTexte = document.getElementById('feedback-texte');
+  const explication = document.getElementById('explication');
+  const definition = document.getElementById('definition');
+  const definitionTexte = document.getElementById('definition-texte');
+  
+  // Vérifier si la réponse est correcte
+  let estCorrect = false;
+  let reponseAttendue = '';
+  let explicationTexte = '';
+  
+  if (niveauActuel.id === 'polygone-ou-non') {
+    reponseAttendue = formeActuelle.estPolygone ? 'Polygone' : 'Non-polygone';
+    estCorrect = reponseSelectionnee === reponseAttendue;
+    
+    if (estCorrect) {
+      if (formeActuelle.estPolygone) {
+        explicationTexte = 'Exact ! Cette forme est un polygone car elle est composée de segments droits qui se referment pour former une figure plane fermée.';
+      } else {
+        explicationTexte = 'Exact ! Cette forme n\'est pas un polygone car elle contient des courbes ou n\'est pas une figure fermée.';
+      }
+    } else {
+      if (formeActuelle.estPolygone) {
+        explicationTexte = `Non, cette forme est bien un polygone. Un polygone est une figure plane fermée composée de segments droits. ${formeActuelle.explication}`;
+      } else {
+        explicationTexte = `Non, cette forme n'est pas un polygone. ${formeActuelle.explication}`;
+      }
+    }
+    
+  } else if (niveauActuel.id === 'type-polygone') {
+    reponseAttendue = formeActuelle.type === 'triangle' ? 'Triangle' : 'Quadrilatère';
+    estCorrect = reponseSelectionnee === reponseAttendue;
+    
+    if (estCorrect) {
+      if (formeActuelle.type === 'triangle') {
+        explicationTexte = 'Exact ! Cette forme est un triangle car elle a 3 côtés.';
+      } else {
+        explicationTexte = 'Exact ! Cette forme est un quadrilatère car elle a 4 côtés.';
+      }
+    } else {
+      if (formeActuelle.type === 'triangle') {
+        explicationTexte = `Non, cette forme est un triangle car elle a 3 côtés. Un triangle est un polygone à trois côtés.`;
+      } else {
+        explicationTexte = `Non, cette forme est un quadrilatère car elle a 4 côtés. Un quadrilatère est un polygone à quatre côtés.`;
+      }
+    }
+    
+  } else if (niveauActuel.id === 'quadrilateres') {
+    reponseAttendue = formeActuelle.type.charAt(0).toUpperCase() + formeActuelle.type.slice(1);
+    estCorrect = reponseSelectionnee === reponseAttendue;
+    
+    if (estCorrect) {
+      switch(formeActuelle.type) {
+        case 'trapeze':
+          explicationTexte = 'Exact ! C\'est un trapèze car il a au moins une paire de côtés parallèles.';
+          break;
+        case 'parallelogramme':
+          explicationTexte = 'Exact ! C\'est un parallélogramme car ses côtés opposés sont parallèles et de même longueur.';
+          break;
+        case 'rectangle':
+          explicationTexte = 'Exact ! C\'est un rectangle car il a quatre angles droits et des côtés opposés parallèles et de même longueur.';
+          break;
+        case 'carre':
+          explicationTexte = 'Exact ! C\'est un carré car il a quatre côtés de même longueur et quatre angles droits.';
+          break;
+        case 'losange':
+          explicationTexte = 'Exact ! C\'est un losange car il a quatre côtés de même longueur et des côtés opposés parallèles.';
+          break;
+      }
+    } else {
+      switch(formeActuelle.type) {
+        case 'trapeze':
+          explicationTexte = `Non, c'est un trapèze. Un trapèze est un quadrilatère qui a au moins une paire de côtés parallèles.`;
+          break;
+        case 'parallelogramme':
+          explicationTexte = `Non, c'est un parallélogramme. Un parallélogramme a ses côtés opposés parallèles et de même longueur.`;
+          break;
+        case 'rectangle':
+          explicationTexte = `Non, c'est un rectangle. Un rectangle a quatre angles droits et des côtés opposés parallèles et de même longueur.`;
+          break;
+        case 'carre':
+          explicationTexte = `Non, c'est un carré. Un carré a quatre côtés de même longueur et quatre angles droits.`;
+          break;
+        case 'losange':
+          explicationTexte = `Non, c'est un losange. Un losange a quatre côtés de même longueur et des côtés opposés parallèles.`;
+          break;
+      }
+    }
+  }
+  
+  // Mettre à jour le score et afficher le feedback
+  if (estCorrect) {
+    scoreGeometrie++;
+    feedback.className = 'feedback correct';
+    feedbackTexte.textContent = 'Bonne réponse !';
+  } else {
+    feedback.className = 'feedback incorrect';
+    feedbackTexte.textContent = `La bonne réponse était : ${reponseAttendue}`;
+  }
+  
+  // Afficher l'explication détaillée
+  explication.textContent = explicationTexte;
+  
+  // Afficher la définition si disponible
+  if (geometrieData.definitions[formeActuelle.type]) {
+    definitionTexte.textContent = geometrieData.definitions[formeActuelle.type];
+    definition.style.display = 'block';
+  }
+  
+  // Afficher le feedback
+  feedback.style.display = 'block';
+  
+  // Désactiver tous les boutons de réponse
+  document.querySelectorAll('.reponse-btn').forEach(btn => {
+    btn.disabled = true;
+    // Mettre en évidence la bonne réponse
+    if (niveauActuel.id === 'polygone-ou-non' && btn.textContent === reponseAttendue) {
+      btn.classList.add('correct-answer');
+    } else if ((niveauActuel.id === 'type-polygone' || niveauActuel.id === 'quadrilateres') && 
+               btn.textContent.toLowerCase() === formeActuelle.type) {
+      btn.classList.add('correct-answer');
+    }
+  });
+  
+  // Afficher le bouton suivant
+  document.getElementById('btn-valider').style.display = 'none';
+  document.getElementById('btn-suivant').style.display = 'inline-block';
+}
+
+// Afficher la forme suivante
+function afficherFormeSuivante() {
+  afficherFormeAleatoire();
+}
+
+
+
+// Afficher les résultats finaux
+function afficherResultats() {
+  document.getElementById('forme-container').style.display = 'none';
+  const resultats = document.getElementById('resultats');
+  document.getElementById('score').textContent = scoreGeometrie;
+  document.getElementById('total').textContent = totalFormes;
+  resultats.style.display = 'block';
+}
+
+// Recommencer le niveau
+function recommencerNiveau() {
+  if (niveauActuel) {
+    demarrerNiveau(niveauActuel.id);
   }
 }
 
 // Ajouter les écouteurs d'événements pour le jeu de conjugaison
 document.addEventListener('DOMContentLoaded', function() {
+  // Initialisation du menu
+  const menuBtn = document.querySelector('.menu-btn');
+  if (menuBtn) {
+    menuBtn.addEventListener('click', toggleMenu);
+  }
+  
+  // Initialisation du jeu de géométrie
+  initialiserJeuGeometrie();
+  
   const checkBtn = document.getElementById('check-conjugaison');
   const nextBtn = document.getElementById('next-conjugaison');
   

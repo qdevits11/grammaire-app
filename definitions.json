@@ -1,0 +1,64 @@
+{
+  "definitions": [
+    {
+      "id": "def1",
+      "definition": "Figure géométrique à trois côtés",
+      "termes": ["cercle", "carré", "triangle", "rectangle"],
+      "termeCorrect": "triangle"
+    },
+    {
+      "id": "def2",
+      "definition": "Figure géométrique à quatre côtés égaux et quatre angles droits",
+      "termes": ["carré", "rectangle", "losange", "triangle"],
+      "termeCorrect": "carré"
+    },
+    {
+      "id": "def3",
+      "definition": "Figure géométrique parfaitement ronde",
+      "termes": ["ovale", "cercle", "ellipse", "losange"],
+      "termeCorrect": "cercle"
+    },
+    {
+      "id": "def4",
+      "definition": "Figure géométrique à quatre côtés avec des côtés opposés égaux et parallèles",
+      "termes": ["trapèze", "losange", "parallélogramme", "carré"],
+      "termeCorrect": "parallélogramme"
+    },
+    {
+      "id": "def5",
+      "definition": "Polygone à cinq côtés",
+      "termes": ["hexagone", "pentagone", "heptagone", "octogone"],
+      "termeCorrect": "pentagone"
+    },
+    {
+      "id": "def6",
+      "definition": "Polygone à six côtés",
+      "termes": ["pentagone", "hexagone", "heptagone", "octogone"],
+      "termeCorrect": "hexagone"
+    },
+    {
+      "id": "def7",
+      "definition": "Figure géométrique avec deux paires de côtés parallèles",
+      "termes": ["trapèze", "parallélogramme", "losange", "carré"],
+      "termeCorrect": "parallélogramme"
+    },
+    {
+      "id": "def8",
+      "definition": "Quadrilatère avec quatre côtés égaux",
+      "termes": ["carré", "losange", "rectangle", "parallélogramme"],
+      "termeCorrect": "losange"
+    },
+    {
+      "id": "def9",
+      "definition": "Quadrilatère avec quatre angles droits",
+      "termes": ["carré", "rectangle", "losange", "trapèze"],
+      "termeCorrect": "rectangle"
+    },
+    {
+      "id": "def10",
+      "definition": "Quadrilatère avec au moins une paire de côtés parallèles",
+      "termes": ["trapèze", "parallélogramme", "losange", "rectangle"],
+      "termeCorrect": "trapèze"
+    }
+  ]
+}

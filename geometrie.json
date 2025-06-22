@@ -1,0 +1,106 @@
+{
+  "niveaux": [
+    {
+      "id": "polygone-ou-non",
+      "nom": "Polygone ou non ?",
+      "description": "Détermine si la forme est un polygone ou non.",
+      "formes": [
+        {
+          "image": "cercle.svg",
+          "estPolygone": false,
+          "explication": "Un cercle n'est pas un polygone car il n'a pas de côtés droits."
+        },
+        {
+          "image": "triangle.svg",
+          "estPolygone": true,
+          "type": "triangle",
+          "explication": "Un triangle est un polygone à 3 côtés."
+        },
+        {
+          "image": "rectangle.svg",
+          "estPolygone": true,
+          "type": "quadrilatere",
+          "explication": "Un rectangle est un polygone à 4 côtés droits avec des angles droits."
+        },
+        {
+          "image": "ovale.svg",
+          "estPolygone": false,
+          "explication": "Un ovale n'est pas un polygone car il n'a pas de côtés droits."
+        },
+        {
+          "image": "pentagone.svg",
+          "estPolygone": true,
+          "explication": "Un pentagone est un polygone à 5 côtés."
+        }
+      ]
+    },
+    {
+      "id": "type-polygone",
+      "nom": "Quel type de polygone ?",
+      "description": "Identifie le type de polygone (triangle ou quadrilatère).",
+      "formes": [
+        {
+          "image": "triangle-equilateral.svg",
+          "type": "triangle",
+          "sousType": "équilatéral",
+          "explication": "C'est un triangle avec trois côtés égaux."
+        },
+        {
+          "image": "rectangle.svg",
+          "type": "quadrilatere",
+          "sousType": "rectangle",
+          "explication": "C'est un quadrilatère avec 4 angles droits."
+        },
+        {
+          "image": "triangle-rectangle.svg",
+          "type": "triangle",
+          "sousType": "rectangle",
+          "explication": "C'est un triangle avec un angle droit."
+        },
+        {
+          "image": "losange.svg",
+          "type": "quadrilatere",
+          "sousType": "losange",
+          "explication": "C'est un quadrilatère avec 4 côtés égaux."
+        }
+      ]
+    },
+    {
+      "id": "quadrilateres",
+      "nom": "Classer les quadrilatères",
+      "description": "Classe les quadrilatères selon leurs propriétés.",
+      "formes": [
+        {
+          "image": "trapeze.svg",
+          "type": "trapèze",
+          "explication": "Un trapèze a au moins une paire de côtés parallèles."
+        },
+        {
+          "image": "parallelogramme.svg",
+          "type": "parallélogramme",
+          "explication": "Un parallélogramme a deux paires de côtés parallèles."
+        },
+        {
+          "image": "rectangle.svg",
+          "type": "rectangle",
+          "explication": "Un rectangle est un parallélogramme avec 4 angles droits."
+        },
+        {
+          "image": "carre.svg",
+          "type": "carré",
+          "explication": "Un carré est un rectangle avec 4 côtés égaux."
+        }
+      ]
+    }
+  ],
+  "definitions": {
+    "polygone": "Figure plane fermée formée de segments de droite (côtés) qui se rencontrent à leurs extrémités (sommets).",
+    "triangle": "Polygone à trois côtés.",
+    "quadrilatère": "Polygone à quatre côtés.",
+    "trapèze": "Quadrilatère ayant au moins une paire de côtés parallèles.",
+    "parallélogramme": "Quadrilatère dont les côtés opposés sont parallèles et de même longueur.",
+    "rectangle": "Parallélogramme ayant quatre angles droits.",
+    "carré": "Rectangle ayant quatre côtés de même longueur.",
+    "losange": "Parallélogramme ayant quatre côtés de même longueur."
+  }
+}
