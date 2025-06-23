@@ -200,14 +200,6 @@
           réponsesCorrectes: new Set(),
           totalPoints: 0,
           totalErreurs: 0
-        },
-        geometrie: {
-          data: [],
-          current: 0,
-          usedIndices: [],
-          réponsesCorrectes: new Set(),
-          totalPoints: 0,
-          totalErreurs: 0
         }
       };
       
@@ -321,17 +313,12 @@
         </li>
         <li>
           <a href="#geometrie" onclick="selectGame('geometrie')">
-            <span>📐 Jeu des formes géométriques</span>
+            <span>📐 Formes géométriques</span>
           </a>
         </li>
         <li>
           <a href="#definitions" onclick="selectGame('definitions')">
             <span>📖 Définitions de géométrie</span>
-          </a>
-        </li>
-        <li>
-          <a href="jeu-geometrie/index.html" target="_blank">
-            <span>🎮 Jeu des formes géométriques</span>
           </a>
         </li>
       </ul>
@@ -492,22 +479,6 @@
         <h1>Découverte des formes géométriques</h1>
         <p class="niveau-description">Sélectionne un niveau pour commencer à jouer !</p>
         
-        <!-- Conteneur du jeu de géométrie -->
-        <div class="game-container">
-          <div class="geometrie-question-container">
-            <p id="geometrie-question">Choisis la bonne définition pour :</p>
-            <h2 id="geometrie-shape">Carré</h2>
-          </div>
-          
-          <div class="geometrie-options" id="geometrie-options">
-            <!-- Les options seront ajoutées par JavaScript -->
-          </div>
-          
-          <div class="geometrie-feedback" id="geometrie-feedback"></div>
-          
-          <button id="geometrie-next-btn" class="btn">Suivant</button>
-        </div>
-        
         <div class="geometrie-niveaux">
           <button class="niveau-btn" data-niveau="polygone-ou-non">Niveau 1 : Polygone ou non ?</button>
           <button class="niveau-btn" data-niveau="type-polygone">Niveau 2 : Type de polygone</button>
@@ -524,18 +495,16 @@
           </div>
           
           <div class="reponse-boutons" id="reponse-boutons-container" style="
-            border: 2px solid #ddd; 
+            border: 2px solid red; 
             padding: 20px; 
             margin: 20px 0;
             background-color: #f9f9f9;
             border-radius: 8px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 100px;
             position: relative;
-            width: 100%;
-            box-sizing: border-box;
           ">
             <!-- Les boutons de réponse seront générés dynamiquement -->
             <p style="
@@ -1231,10 +1200,6 @@ function selectGame(game) {
     // Initialiser le jeu de conjugaison si c'est le jeu sélectionné
     if (game === 'conjugaison') {
       initConjugaison();
-    }
-    // Initialiser le jeu de géométrie si c'est le jeu sélectionné
-    else if (game === 'geometrie') {
-      initGeometrieGame();
     }
   } else {
     console.error('Élément du jeu non trouvé:', `.game-${game}`);
@@ -2833,13 +2798,11 @@ function demarrerNiveau(niveauId) {
     if (btnSuivant) btnSuivant.style.display = 'none';
     
     // Mettre à jour les variables globales
-    window.niveauActuel = { id: niveauId };
+    window.niveauActuel = niveauId;
     window.formeActuelle = window.formesDisponibles[0];
     
     // Afficher la première forme
     console.log('Affichage de la première forme...');
-    console.log('Niveau actuel:', window.niveauActuel);
-    console.log('Forme actuelle:', window.formeActuelle);
     afficherFormeAleatoire();
     
   } catch (error) {
@@ -2924,24 +2887,6 @@ function afficherFormeAleatoire() {
     return;
   }
   
-  // S'assurer que le conteneur parent est visible
-  const formeContainer = document.getElementById('forme-container');
-  if (formeContainer) {
-    formeContainer.style.display = 'block';
-    console.log('Conteneur de forme affiché');
-    
-    // Forcer le recalcul des styles pour s'assurer que la grille s'affiche correctement
-    setTimeout(() => {
-      const reponsesContainer = document.getElementById('reponse-boutons-container');
-      if (reponsesContainer) {
-        reponsesContainer.style.display = 'grid';
-        console.log('Conteneur de réponses forcé en mode grid');
-      }
-    }, 100);
-  } else {
-    console.error('ERREUR: Le conteneur de forme est introuvable');
-  }
-  
   // Vérifier s'il reste des formes à jouer
   if (window.formesDisponibles.length === 0) {
     console.log('Toutes les formes ont été jouées, affichage des résultats...');
@@ -3018,7 +2963,7 @@ function afficherFormeAleatoire() {
     });
     
     // Forcer l'affichage pour le débogage
-    reponsesContainer.style.display = 'grid';
+    reponsesContainer.style.display = 'block';
     reponsesContainer.style.visibility = 'visible';
     reponsesContainer.style.opacity = '1';
     
@@ -3157,15 +3102,6 @@ function afficherFormeAleatoire() {
           console.error(`Erreur lors de la création du bouton ${index}:`, error);
         }
       });
-      
-      // Ajouter le fragment au conteneur des réponses
-      if (reponsesContainer) {
-        console.log('Ajout du fragment au conteneur des réponses...');
-        reponsesContainer.appendChild(fragment);
-        console.log('Boutons ajoutés avec succès au conteneur:', reponsesContainer);
-      } else {
-        console.error('Le conteneur des réponses est introuvable');
-      }
     }
     
     // Mettre à jour les boutons d'action
@@ -3699,163 +3635,6 @@ function recommencerNiveau() {
       }
     }
   }
-}
-
-// Définitions des formes géométriques et leurs définitions
-const geometrieDefinitions = [
-    {
-        nom: "Polygone",
-        definition: "Une surface dont tous les côtés sont droits"
-    },
-    {
-        nom: "Quadrilatère",
-        definition: "Un polygone à 4 côtés"
-    },
-    {
-        nom: "Parallélogramme",
-        definition: "Un quadrilatère qui a 2 paires de côtés parallèles"
-    },
-    {
-        nom: "Trapèze",
-        definition: "Un quadrilatère qui a 1 paire de côtés parallèles"
-    },
-    {
-        nom: "Rectangle",
-        definition: "Un quadrilatère qui a 4 angles droits"
-    },
-    {
-        nom: "Carré",
-        definition: "Un quadrilatère qui a 4 côtés isométriques et 4 angles droits"
-    },
-    {
-        nom: "Triangle",
-        definition: "Un polygone à 3 côtés"
-    }
-];
-
-// Variables du jeu de géométrie
-let geometrieScore = 0;
-let geometrieCurrentQuestion = null;
-let geometrieQuestions = [];
-let geometrieCanAnswer = true;
-
-// Initialisation du jeu de géométrie
-function initGeometrieGame() {
-    geometrieScore = 0;
-    updateGeometrieScore();
-    geometrieQuestions = [...geometrieDefinitions];
-    nextGeometrieQuestion();
-}
-
-// Affiche une nouvelle question de géométrie
-function nextGeometrieQuestion() {
-    // Réinitialiser l'interface
-    document.getElementById('geometrie-feedback').textContent = '';
-    document.getElementById('geometrie-next-btn').style.display = 'none';
-    geometrieCanAnswer = true;
-    
-    // Mélanger les questions si nécessaire
-    if (geometrieQuestions.length === 0) {
-        geometrieQuestions = [...geometrieDefinitions];
-    }
-    
-    // Choisir une question aléatoire
-    const randomIndex = Math.floor(Math.random() * geometrieQuestions.length);
-    geometrieCurrentQuestion = geometrieQuestions.splice(randomIndex, 1)[0];
-    
-    // Afficher la question
-    document.getElementById('geometrie-shape').textContent = geometrieCurrentQuestion.nom;
-    
-    // Générer les options de réponse
-    generateGeometrieOptions();
-}
-
-// Génère les options de réponse pour le jeu de géométrie
-function generateGeometrieOptions() {
-    const optionsContainer = document.getElementById('geometrie-options');
-    optionsContainer.innerHTML = '';
-    
-    // Créer un tableau avec toutes les définitions sauf la bonne
-    let wrongOptions = geometrieDefinitions
-        .filter(def => def.nom !== geometrieCurrentQuestion.nom)
-        .map(def => def.definition);
-    
-    // Mélanger les mauvaises réponses
-    wrongOptions = shuffleArray(wrongOptions);
-    
-    // Prendre 3 mauvaises réponses
-    const selectedWrongOptions = wrongOptions.slice(0, 3);
-    
-    // Créer un tableau avec toutes les options
-    const allOptions = [
-        geometrieCurrentQuestion.definition,
-        ...selectedWrongOptions
-    ];
-    
-    // Mélanger les options
-    const shuffledOptions = shuffleArray(allOptions);
-    
-    // Créer les boutons d'options
-    shuffledOptions.forEach(option => {
-        const button = document.createElement('button');
-        button.className = 'geometrie-option';
-        button.textContent = option;
-        button.addEventListener('click', () => selectGeometrieOption(button, option));
-        optionsContainer.appendChild(button);
-    });
-}
-
-// Gère la sélection d'une option dans le jeu de géométrie
-function selectGeometrieOption(button, selectedOption) {
-    if (!geometrieCanAnswer) return;
-    
-    geometrieCanAnswer = false;
-    
-    // Vérifier si la réponse est correcte
-    const isCorrect = selectedOption === geometrieCurrentQuestion.definition;
-    const feedbackElement = document.getElementById('geometrie-feedback');
-    
-    // Mettre à jour le score
-    if (isCorrect) {
-        geometrieScore++;
-        updateGeometrieScore();
-        feedbackElement.textContent = 'Bonne réponse !';
-        feedbackElement.style.color = '#28a745';
-        button.classList.add('correct');
-    } else {
-        feedbackElement.textContent = `Incorrect. La bonne réponse était : ${geometrieCurrentQuestion.definition}`;
-        feedbackElement.style.color = '#dc3545';
-        button.classList.add('incorrect');
-        
-        // Mettre en évidence la bonne réponse
-        const options = document.querySelectorAll('.geometrie-option');
-        options.forEach(opt => {
-            if (opt.textContent === geometrieCurrentQuestion.definition) {
-                opt.classList.add('correct');
-            }
-        });
-    }
-    
-    // Afficher le bouton suivant
-    document.getElementById('geometrie-next-btn').style.display = 'block';
-}
-
-// Met à jour l'affichage du score du jeu de géométrie
-function updateGeometrieScore() {
-    const scoreElement = document.getElementById('points');
-    if (scoreElement) {
-        scoreElement.textContent = geometrieScore;
-    }
-}
-
-// Ajouter les écouteurs d'événements pour le jeu de géométrie
-document.getElementById('geometrie-next-btn').addEventListener('click', nextGeometrieQuestion);
-
-// Initialiser le jeu de géométrie quand la section est affichée
-function initGeometrieIfNeeded() {
-    if (currentGame === 'geometrie' && geometrieQuestions.length === 0) {
-        initGeometrieGame();
-    }
 }
 
 // Ajouter les écouteurs d'événements pour le jeu de conjugaison

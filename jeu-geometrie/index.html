@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le Monde des Formes Géométriques</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Le Monde des Formes Géométriques</h1>
+        
+        <div class="game-container">
+            <div class="score">
+                <span>Score: </span>
+                <span id="score">0</span>
+            </div>
+            
+            <div class="question-container">
+                <p id="question">Choisis la bonne définition pour :</p>
+                <h2 id="shape">Carré</h2>
+            </div>
+            
+            <div class="options" id="options">
+                <!-- Les options seront ajoutées par JavaScript -->
+            </div>
+            
+            <div class="feedback" id="feedback"></div>
+            
+            <button id="next-btn" class="btn">Suivant</button>
+        </div>
+        
+        <div class="rules">
+            <h3>Règles du jeu :</h3>
+            <p>Choisis la bonne définition pour chaque forme géométrique qui t'est présentée.</p>
+            <p>Tu gagnes 1 point pour chaque bonne réponse !</p>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
